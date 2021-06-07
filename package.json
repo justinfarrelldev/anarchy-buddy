@@ -8,7 +8,7 @@
     "test-watch": "jest --watch --passWithNoTests",
     "build-and-run": "tsc && node ./build/index.js", 
     "build": "tsc", 
-    "run": "node ./build/index.js"
+    "start": "node ./build/index.js"
   },
   "keywords": [],
   "author": "",
