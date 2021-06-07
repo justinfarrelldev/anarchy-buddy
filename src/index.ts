@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { BOT_COMMAND_NAME, ERRORS } from "../constants";
+import { BOT_COMMAND_NAME, Error } from "../constants";
 import { ResolveCommand } from "./commands";
 
 require("dotenv").config();
@@ -15,13 +15,9 @@ discordClient.on("message", (msg: Message) => {
 
   if (!msg.content.startsWith(BOT_COMMAND_NAME)) return;
 
-  const tokens = msg.content.split(" ");
+  const validCommand = ResolveCommand(msg);
 
-  const validCommand = ResolveCommand(
-    msg
-  );
-
-  if (!validCommand) msg.channel.send(ERRORS.INVALID_COMMAND);
+  if (!validCommand) Error(msg, "INVALID_COMMAND");
 });
 
 discordClient.login(process.env.DISCORD_BOT_TOKEN);
