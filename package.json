@@ -6,8 +6,9 @@
   "scripts": {
     "test": "jest --passWithNoTests",
     "test-watch": "jest --watch --passWithNoTests",
-    "build-and-run": "tsc && node ./src/ts-out/index.js",
-    "build": "tsc"
+    "build-and-run": "tsc && node ./build/index.js", 
+    "build": "tsc", 
+    "run": "node ./build/index.js"
   },
   "keywords": [],
   "author": "",

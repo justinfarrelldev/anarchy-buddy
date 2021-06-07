@@ -3,6 +3,6 @@
         "target": "es6",
         "module": "commonjs",
         "sourceMap": true,
-        "outDir": "src/ts-out/"
+        "outDir": "build"
     }    
 } 
