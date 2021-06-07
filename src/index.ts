@@ -13,3 +13,5 @@ discordClient.on("message", (msg) => {
 });
 
 discordClient.login(process.env.DISCORD_BOT_TOKEN);
+
+export default discordClient;
