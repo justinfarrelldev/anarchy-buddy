@@ -18,8 +18,7 @@ discordClient.on("message", (msg: Message) => {
   const tokens = msg.content.split(" ");
 
   const validCommand = ResolveCommand(
-    tokens[1],
-    ...tokens.filter((_: any, idx: number) => idx > 1)
+    msg
   );
 
   if (!validCommand) msg.channel.send(ERRORS.INVALID_COMMAND);
