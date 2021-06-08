@@ -4,4 +4,5 @@ src/ts-out
 build/*
 
 .env
+.DS_STORE
 anarchy-buddy.pem

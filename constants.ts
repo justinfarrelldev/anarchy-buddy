@@ -1,3 +1,5 @@
+import { Message } from "discord.js";
+
 // The name to use for accessing the bot commands.
 export const BOT_COMMAND_NAME = "ab";
 
