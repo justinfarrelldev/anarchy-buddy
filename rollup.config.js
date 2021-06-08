@@ -1,11 +1,6 @@
-import merge from 'deepmerge';
-import { createBasicConfig } from '@open-wc/building-rollup';
+import nodeResolve from 'rollup-plugin-node-resolve';
 
-const baseConfig = createBasicConfig();
-
-export default merge(baseConfig, {
-  input: './build/index.js',
-  output: {
-      dir: 'build',
-  }
-});
+export default {
+    input: 'build/index.js',
+    output: {file: 'build/bundle.js', format: 'cjs'},
+};
