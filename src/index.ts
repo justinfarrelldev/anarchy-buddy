@@ -1,10 +1,10 @@
-import { Message } from "discord.js";
-import { BOT_COMMAND_NAME, Error } from "../constants";
+import { Client, Message } from "discord.js";
+import { BOT_COMMAND_NAME, Error } from "./constants";
 import { ResolveCommand } from "./commands";
 
 require("dotenv").config();
 const Discord = require("discord.js");
-const discordClient = new Discord.Client();
+const discordClient: Client = new Discord.Client();
 
 discordClient.on("ready", () => {
   console.log(`Logged in as ${discordClient.user.tag}`);
