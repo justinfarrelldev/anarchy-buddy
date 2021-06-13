@@ -5,4 +5,5 @@ export interface Group {
   members: string;
   color?: string;
   server: string;
+  privateGroup: boolean;
 }

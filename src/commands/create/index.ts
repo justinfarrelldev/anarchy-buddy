@@ -19,14 +19,15 @@ export const CREATE_PREDICATE = "create";
 export const CREATE_DESCRIPTION = `Can be used to create groups. Example: "ab create 'group name'"`;
 export const CREATE_USAGE = "create [group]";
 
-const makeGroup = async (msg: Message, groupName?: string) => {
-  let description: string,
-    members: string[] = [],
-    color: string,
-    owner: string;
+const makePublicGroup = async (
+  msg: Message,
+  group: Group,
+  groupName?: string
+) => {
+  let members = [];
   if (!groupName) {
     msg.channel.send("Please specify the name for the group.");
-    owner = `${msg.author.username}#${msg.author.discriminator}`;
+    group.owner = `${msg.author.username}#${msg.author.discriminator}`;
     await msg.channel
       .awaitMessages((m) => m.author.id == msg.author.id, {
         max: 1,
@@ -45,7 +46,7 @@ const makeGroup = async (msg: Message, groupName?: string) => {
       time: BOT_COMMAND_WAIT_TIME_MS,
     })
     .then((collected) => {
-      description = collected.first().content;
+      group.description = collected.first().content;
     });
 
   while (members.length == 0) {
@@ -61,6 +62,7 @@ const makeGroup = async (msg: Message, groupName?: string) => {
           .mentions.users.forEach((member) =>
             members.push(`${member.username}#${member.discriminator}`)
           );
+        group.members = members.join(",");
       });
   }
 
@@ -73,23 +75,16 @@ const makeGroup = async (msg: Message, groupName?: string) => {
     .then((collected) => {
       // Regex for hex colors
       if (/^#[0-9A-F]{6}$/i.test(collected.first().content)) {
-        color = collected.first().content;
+        group.color = collected.first().content;
       } else if (collected.first().content != "")
-        color = stringToColor(collected.first().content);
+        group.color = stringToColor(collected.first().content);
     });
 
   const params: DocumentClient.PutItemInput = {
     TableName: BOT_TEAM_DATABASE_NAME,
     Item: {
       id: Date.now(),
-      info: {
-        name: groupName,
-        description: description,
-        members: members.join(","),
-        color: color,
-        owner: owner,
-        server: msg.guild.id,
-      } as Group,
+      info: group,
     },
   };
 
@@ -100,6 +95,38 @@ const makeGroup = async (msg: Message, groupName?: string) => {
       return console.error(`${ERRORS.DB_ERROR}: ${error}`);
     }
   });
+};
+
+const makeGroup = async (msg: Message, groupName?: string) => {
+  const group: Group = {
+    description: "",
+    members: "",
+    color: "",
+    owner: "",
+    privateGroup: false,
+    name: "",
+    server: "",
+  };
+
+  msg.channel.send(
+    "Will this group be private? (Will DM you asking the details there for some privacy 😉) [yes/no]"
+  );
+  await msg.channel
+    .awaitMessages((m) => m.author.id == msg.author.id, {
+      max: 1,
+      time: BOT_COMMAND_WAIT_TIME_MS,
+    })
+    .then((collected) => {
+      group.privateGroup =
+        collected.first().content.toLowerCase() == "yes"
+          ? (group.privateGroup = true)
+          : (group.privateGroup = false);
+    })
+    .catch((err) => console.error(err));
+
+  if (!group.privateGroup) {
+    makePublicGroup(msg, group, groupName);
+  }
 };
 
 export const Create = async (msg: Message, command: Command) => {
