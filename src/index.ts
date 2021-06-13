@@ -4,8 +4,8 @@ import { ResolveCommand } from "./commands";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 require("dotenv").config();
-const Discord = require("discord.js");
-const AWS = require("aws-sdk");
+import Discord = require("discord.js");
+import AWS = require("aws-sdk");
 
 AWS.config.update({
   region: process.env.AWS_DEFAULT_REGION_BOT,
