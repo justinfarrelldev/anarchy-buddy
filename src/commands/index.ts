@@ -3,10 +3,12 @@
 import { Message } from "discord.js";
 import { Create, CREATE_DESCRIPTION, CREATE_PREDICATE } from "./create";
 import { Help, HELP_DESCRIPTION, HELP_PREDICATE } from "./help";
+import { List, LIST_DESCRIPTION, LIST_PREDICATE } from "./list";
 
 export const COMMAND_LIST = {
   [HELP_PREDICATE]: HELP_DESCRIPTION,
   [CREATE_PREDICATE]: CREATE_DESCRIPTION,
+  [LIST_PREDICATE]: LIST_DESCRIPTION,
 };
 
 /*
@@ -17,18 +19,19 @@ export const COMMAND_LIST = {
  */
 export const ResolveCommand = (msg: Message): boolean => {
   const messageTokens = msg.content.split(" ");
+  let command = {
+    predicate: messageTokens[1],
+    args: messageTokens.filter((_: any, idx: number) => idx > 1),
+  };
   switch (messageTokens[1]) {
     case HELP_PREDICATE:
-      Help(msg, {
-        predicate: messageTokens[1],
-        args: messageTokens.filter((_: any, idx: number) => idx > 1),
-      });
+      Help(msg, command);
       return true;
     case CREATE_PREDICATE:
-      Create(msg, {
-        predicate: messageTokens[1],
-        args: messageTokens.filter((_: any, idx: number) => idx > 1),
-      });
+      Create(msg, command);
+      return true;
+    case LIST_PREDICATE:
+      List(msg, command);
       return true;
   }
 
