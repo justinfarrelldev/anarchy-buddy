@@ -1,12 +1,12 @@
 // Module map to show predicates and execute them if they are encountered
 
 import { Message } from "discord.js";
-import { Command } from "../command";
+import { Create, CREATE_DESCRIPTION, CREATE_PREDICATE } from "./create";
 import { Help, HELP_DESCRIPTION, HELP_PREDICATE } from "./help";
 
 export const COMMAND_LIST = {
   [HELP_PREDICATE]: HELP_DESCRIPTION,
-  test: "Test description",
+  [CREATE_PREDICATE]: CREATE_DESCRIPTION,
 };
 
 /*
@@ -20,6 +20,12 @@ export const ResolveCommand = (msg: Message): boolean => {
   switch (messageTokens[1]) {
     case HELP_PREDICATE:
       Help(msg, {
+        predicate: messageTokens[1],
+        args: messageTokens.filter((_: any, idx: number) => idx > 1),
+      });
+      return true;
+    case CREATE_PREDICATE:
+      Create(msg, {
         predicate: messageTokens[1],
         args: messageTokens.filter((_: any, idx: number) => idx > 1),
       });

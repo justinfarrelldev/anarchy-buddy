@@ -10,6 +10,7 @@ import { HELP_EMBED } from "../../constants";
 export const HELP_PREDICATE = "help";
 export const HELP_DESCRIPTION =
   "Lists the current bot commands available and their purpose.";
+export const HELP_USAGE = "help <command name>";
 
 // Gets the commands without any arguments.
 const GetDefaultCommands = (msg: Message) => {

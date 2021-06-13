@@ -1,10 +1,11 @@
 const Discord = require("discord.js");
+const ERRORS = require("../../build/constants").ERRORS;
 require("dotenv").config();
 
 const client = new Discord.Client();
 
 const ping = async (message, args) => {
-  message.channel.send("Pong");
+  message.channel.send("Invalid command.");
 };
 
 // a counter so that all the ids are unique
@@ -104,10 +105,10 @@ const channel = new TextChannel(guild);
 
 const user = { id: count++, username: "username", discriminator: "1234" };
 
-describe("ping", () => {
-  it("sends Pong", async () => {
-    await ping(new Message("ping", channel, user), []);
-    expect(channel.lastMessage.content).toBe("Pong");
+describe("Commands", () => {
+  it("says invalid command when only ab is entered", async () => {
+    await ping(new Message("ab", channel, user), []);
+    expect(channel.lastMessage.content).toBe(ERRORS.INVALID_COMMAND);
   });
 });
 
