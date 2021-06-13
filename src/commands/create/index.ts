@@ -20,6 +20,30 @@ export const CREATE_PREDICATE = "create";
 export const CREATE_DESCRIPTION = `Can be used to create groups. Example: "ab create 'group name'"`;
 export const CREATE_USAGE = "create [group]";
 
+const uploadGroup = async (
+  msg: Message,
+  groupToUpload: Group,
+  privateGroup: boolean
+) => {
+  const params: DocumentClient.PutItemInput = {
+    TableName: BOT_TEAM_DATABASE_NAME,
+    Item: {
+      id: Date.now(),
+      info: groupToUpload,
+    },
+  };
+
+  docClient.put(params, (error) => {
+    if (!error) {
+      return !privateGroup
+        ? msg.channel.send(`Successfully created ${groupToUpload.name}.`)
+        : msg.author.send(`Successfully created ${groupToUpload.name}.`);
+    } else {
+      return console.error(`${ERRORS.DB_ERROR}: ${error}`);
+    }
+  });
+};
+
 const makePublicGroup = async (
   msg: Message,
   group: Group,
@@ -35,7 +59,7 @@ const makePublicGroup = async (
         time: BOT_COMMAND_WAIT_TIME_MS,
       })
       .then((collected) => {
-        groupName = collected.first().content;
+        group.name = collected.first().content;
       })
       .catch((err) => console.error(err));
   }
@@ -84,21 +108,7 @@ const makePublicGroup = async (
     })
     .catch((err) => console.error(err));
 
-  const params: DocumentClient.PutItemInput = {
-    TableName: BOT_TEAM_DATABASE_NAME,
-    Item: {
-      id: Date.now(),
-      info: group,
-    },
-  };
-
-  docClient.put(params, (error) => {
-    if (!error) {
-      return msg.channel.send(`Successfully created ${groupName}.`);
-    } else {
-      return console.error(`${ERRORS.DB_ERROR}: ${error}`);
-    }
-  });
+  uploadGroup(msg, group, false);
 };
 
 const makePrivateGroup = async (
@@ -109,10 +119,12 @@ const makePrivateGroup = async (
   let members = [];
 
   let dmMsg: Message = await msg.author.send(
-    `Got it! Your secret is safe with me! What would you like to call this group?`
+    `Got it! Your secret is safe with me!`
   );
 
   if (!groupName) {
+    await msg.author.send("What would you like to call this group?");
+    group.owner = `${msg.author.username}#${msg.author.discriminator}`;
     await dmMsg.channel
       .awaitMessages((m) => m.author.id == msg.author.id, {
         max: 1,
@@ -139,7 +151,7 @@ const makePrivateGroup = async (
     msg.author.send(
       `Please @mention the members of the group inside the bot channel within ${
         BOT_COMMAND_WAIT_TIME_MS_PRIVATE / (1000 * 60)
-      } minutes. `
+      } minutes. You can use spoiler text if you wish by surrounding the text with pipes like so: ll @ThisIsHidden ll. The message will be automatically deleted.`
     );
     await msg.channel
       .awaitMessages((m) => m.author.id == msg.author.id, {
@@ -152,12 +164,33 @@ const makePrivateGroup = async (
           .mentions.users.forEach((member) =>
             members.push(`${member.username}#${member.discriminator}`)
           );
+
         group.members = members.join(",");
+        msg.channel.lastMessage.delete({
+          reason: "Getting rid of a member list for a private group.",
+        });
       })
       .catch((err) => console.error(err));
-
-    console.log("Group members now: ", group.members);
   }
+
+  console.log("Group members now: ", group.members);
+
+  msg.author.send("Add a custom color (optional).");
+  await dmMsg.channel
+    .awaitMessages((m) => m.author.id == msg.author.id, {
+      max: 1,
+      time: BOT_COMMAND_WAIT_TIME_MS,
+    })
+    .then((collected) => {
+      // Regex for hex colors
+      if (/^#[0-9A-F]{6}$/i.test(collected.first().content)) {
+        group.color = collected.first().content;
+      } else if (collected.first().content != "")
+        group.color = stringToColor(collected.first().content);
+    })
+    .catch((err) => console.error(err));
+
+  uploadGroup(msg, group, true);
 };
 
 const makeGroup = async (msg: Message, groupName?: string) => {
@@ -168,7 +201,7 @@ const makeGroup = async (msg: Message, groupName?: string) => {
     owner: "",
     privateGroup: false,
     name: groupName ? groupName : "",
-    server: "",
+    server: msg.guild.id,
   };
 
   msg.channel.send(
