@@ -47,7 +47,8 @@ const makePublicGroup = async (
     })
     .then((collected) => {
       group.description = collected.first().content;
-    });
+    })
+    .catch((err) => console.error(err));
 
   while (members.length == 0) {
     msg.channel.send("Please @mention the members of the group.");
@@ -63,7 +64,8 @@ const makePublicGroup = async (
             members.push(`${member.username}#${member.discriminator}`)
           );
         group.members = members.join(",");
-      });
+      })
+      .catch((err) => console.error(err));
   }
 
   msg.channel.send("Add a custom color (optional).");
@@ -78,7 +80,8 @@ const makePublicGroup = async (
         group.color = collected.first().content;
       } else if (collected.first().content != "")
         group.color = stringToColor(collected.first().content);
-    });
+    })
+    .catch((err) => console.error(err));
 
   const params: DocumentClient.PutItemInput = {
     TableName: BOT_TEAM_DATABASE_NAME,
@@ -95,6 +98,34 @@ const makePublicGroup = async (
       return console.error(`${ERRORS.DB_ERROR}: ${error}`);
     }
   });
+};
+
+const makePrivateGroup = async (
+  msg: Message,
+  group: Group,
+  groupName?: string
+) => {
+  let members = [];
+
+  msg.author
+    .send(
+      `Got it! Your secret is safe with me! What would you like to call this group?`
+    )
+    .then(async (dmMsg) => {
+      console.log(`DM MESSAGE MADE, AUTHOR: ${msg.author.username}`);
+      await dmMsg.channel
+        .awaitMessages((m) => m.author.id == msg.author.id, {
+          max: 1,
+          time: BOT_COMMAND_WAIT_TIME_MS,
+        })
+        .then((collected) => {
+          console.log(
+            "Got the message: ",
+            collected.map((response) => `${response}`)
+          );
+        })
+        .catch((err) => console.error(err));
+    });
 };
 
 const makeGroup = async (msg: Message, groupName?: string) => {
@@ -126,6 +157,8 @@ const makeGroup = async (msg: Message, groupName?: string) => {
 
   if (!group.privateGroup) {
     makePublicGroup(msg, group, groupName);
+  } else {
+    makePrivateGroup(msg, group, groupName);
   }
 };
 
