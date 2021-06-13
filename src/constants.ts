@@ -2,6 +2,7 @@ import { EmbedFieldData, Message } from "discord.js";
 import discord = require("discord.js");
 // The name to use for accessing the bot commands.
 export const BOT_COMMAND_NAME = "ab";
+export const BOT_TEAM_DATABASE_NAME = "anarchy-buddy-teams";
 
 interface ERRORS_INTERFACE {
   INVALID_COMMAND: string;

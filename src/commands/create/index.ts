@@ -4,7 +4,11 @@
 
 import { Command } from "../../command";
 import { Message } from "discord.js";
-import { ERRORS, unknownCommandError } from "../../constants";
+import {
+  BOT_TEAM_DATABASE_NAME,
+  ERRORS,
+  unknownCommandError,
+} from "../../constants";
 import { docClient } from "../../index";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
@@ -13,9 +17,8 @@ export const CREATE_DESCRIPTION = `Can be used to create teams. Example: "ab cre
 export const CREATE_USAGE = "create [team]";
 
 const makeTeam = (msg: Message, teamName?: string) => {
-
   const params: DocumentClient.PutItemInput = {
-    TableName: "anarchy-buddy-teams",
+    TableName: BOT_TEAM_DATABASE_NAME,
     Item: {
       id: Date.now(),
       info: {
