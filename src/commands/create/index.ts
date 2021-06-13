@@ -64,7 +64,7 @@ const makePublicGroup = async (
       .catch((err) => console.error(err));
   }
 
-  msg.channel.send(`Add a description for ${groupName}.`);
+  msg.channel.send(`Add a description for ${group.name}.`);
   await msg.channel
     .awaitMessages((m) => m.author.id == msg.author.id, {
       max: 1,
@@ -88,7 +88,7 @@ const makePublicGroup = async (
           .mentions.users.forEach((member) =>
             members.push(`${member.username}#${member.discriminator}`)
           );
-        group.members = members.join(",");
+        group.members = members;
       })
       .catch((err) => console.error(err));
   }
@@ -136,7 +136,7 @@ const makePrivateGroup = async (
       .catch((err) => console.error(err));
   }
 
-  await msg.author.send(`Add a description for ${group.name}`);
+  await msg.author.send(`Add a description for ${group.name}.`);
   await dmMsg.channel
     .awaitMessages((m) => m.author.id == msg.author.id, {
       max: 1,
@@ -165,7 +165,7 @@ const makePrivateGroup = async (
             members.push(`${member.username}#${member.discriminator}`)
           );
 
-        group.members = members.join(",");
+        group.members = members;
         msg.channel.lastMessage.delete({
           reason: "Getting rid of a member list for a private group.",
         });
@@ -196,7 +196,7 @@ const makePrivateGroup = async (
 const makeGroup = async (msg: Message, groupName?: string) => {
   const group: Group = {
     description: "",
-    members: "",
+    members: [],
     color: "",
     owner: "",
     privateGroup: false,
