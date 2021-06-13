@@ -3,8 +3,9 @@
  */
 
 import { Command } from "../../command";
-import { Message } from "discord.js";
+import { Message, EmbedFieldData } from "discord.js";
 import { COMMAND_LIST } from "..";
+import { HELP_EMBED } from "../../constants";
 
 export const HELP_PREDICATE = "help";
 export const HELP_DESCRIPTION =
@@ -13,16 +14,17 @@ export const HELP_DESCRIPTION =
 // Gets the commands without any arguments.
 const GetDefaultCommands = (msg: Message) => {
   msg.channel.send(
-    "```" +
-      Object.values(COMMAND_LIST)
-        .map((value, idx) => `${Object.keys(COMMAND_LIST)[idx]} - ${value}`)
-        .join("\n") +
-      "```"
+    HELP_EMBED.addFields(
+      Object.values(COMMAND_LIST).map((value, idx) => {
+        return {
+          name: Object.keys(COMMAND_LIST)[idx],
+          value: value,
+        } as EmbedFieldData;
+      })
+    )
   );
 };
 
 export const Help = (msg: Message, command: Command) => {
   if (command.args.length === 0) GetDefaultCommands(msg);
-
-  
 };

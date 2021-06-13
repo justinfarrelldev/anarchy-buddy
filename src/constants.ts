@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-
+import discord = require("discord.js");
 // The name to use for accessing the bot commands.
 export const BOT_COMMAND_NAME = "ab";
 
@@ -17,3 +17,7 @@ export const Error = (msg: Message, err: keyof ERRORS_INTERFACE) => {
   );
   msg.channel.send(ERRORS[err]);
 };
+
+export let HELP_EMBED = new discord.MessageEmbed()
+  .setColor("#0099ff")
+  .setTitle("Help");
