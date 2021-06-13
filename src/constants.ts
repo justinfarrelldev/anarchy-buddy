@@ -4,6 +4,7 @@ import discord = require("discord.js");
 export const BOT_COMMAND_NAME = "ab";
 export const BOT_TEAM_DATABASE_NAME = "anarchy-buddy-teams";
 export const BOT_COMMAND_WAIT_TIME_MS = 30000; // 30s
+export const BOT_COMMAND_WAIT_TIME_MS_PRIVATE = 300000; // 5 mins
 
 interface ERRORS_INTERFACE {
   INVALID_COMMAND: string;

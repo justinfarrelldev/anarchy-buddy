@@ -6,6 +6,7 @@ import { Command } from "../../command";
 import { Message } from "discord.js";
 import {
   BOT_COMMAND_WAIT_TIME_MS,
+  BOT_COMMAND_WAIT_TIME_MS_PRIVATE,
   BOT_TEAM_DATABASE_NAME,
   ERRORS,
   unknownCommandError,
@@ -107,25 +108,56 @@ const makePrivateGroup = async (
 ) => {
   let members = [];
 
-  msg.author
-    .send(
-      `Got it! Your secret is safe with me! What would you like to call this group?`
-    )
-    .then(async (dmMsg) => {
-      console.log(`DM MESSAGE MADE, AUTHOR: ${msg.author.username}`);
-      await dmMsg.channel
-        .awaitMessages((m) => m.author.id == msg.author.id, {
-          max: 1,
-          time: BOT_COMMAND_WAIT_TIME_MS,
-        })
-        .then((collected) => {
-          console.log(
-            "Got the message: ",
-            collected.map((response) => `${response}`)
+  let dmMsg: Message = await msg.author.send(
+    `Got it! Your secret is safe with me! What would you like to call this group?`
+  );
+
+  if (!groupName) {
+    await dmMsg.channel
+      .awaitMessages((m) => m.author.id == msg.author.id, {
+        max: 1,
+        time: BOT_COMMAND_WAIT_TIME_MS,
+      })
+      .then((collected) => {
+        group.name = collected.first().content;
+      })
+      .catch((err) => console.error(err));
+  }
+
+  await msg.author.send(`Add a description for ${group.name}`);
+  await dmMsg.channel
+    .awaitMessages((m) => m.author.id == msg.author.id, {
+      max: 1,
+      time: BOT_COMMAND_WAIT_TIME_MS,
+    })
+    .then((collected) => {
+      group.description = collected.first().content;
+    })
+    .catch((err) => console.error(err));
+
+  while (members.length == 0) {
+    msg.author.send(
+      `Please @mention the members of the group inside the bot channel within ${
+        BOT_COMMAND_WAIT_TIME_MS_PRIVATE / (1000 * 60)
+      } minutes. `
+    );
+    await msg.channel
+      .awaitMessages((m) => m.author.id == msg.author.id, {
+        max: 1,
+        time: BOT_COMMAND_WAIT_TIME_MS,
+      })
+      .then((collected) => {
+        collected
+          .first()
+          .mentions.users.forEach((member) =>
+            members.push(`${member.username}#${member.discriminator}`)
           );
-        })
-        .catch((err) => console.error(err));
-    });
+        group.members = members.join(",");
+      })
+      .catch((err) => console.error(err));
+
+    console.log("Group members now: ", group.members);
+  }
 };
 
 const makeGroup = async (msg: Message, groupName?: string) => {
@@ -135,7 +167,7 @@ const makeGroup = async (msg: Message, groupName?: string) => {
     color: "",
     owner: "",
     privateGroup: false,
-    name: "",
+    name: groupName ? groupName : "",
     server: "",
   };
 
