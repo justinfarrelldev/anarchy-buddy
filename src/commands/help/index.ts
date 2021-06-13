@@ -23,8 +23,24 @@ const GetDefaultCommands = (msg: Message) => {
       })
     )
   );
+  HELP_EMBED.fields = [];
 };
 
 export const Help = (msg: Message, command: Command) => {
-  if (command.args.length === 0) GetDefaultCommands(msg);
+  if (command.args.length === 0) {
+    GetDefaultCommands(msg);
+    return;
+  }
+
+  for (const field in COMMAND_LIST) {
+    if (field === command.args[0]) {
+      msg.channel.send(
+        HELP_EMBED.addFields({
+          name: field,
+          value: COMMAND_LIST[field],
+        })
+      );
+      HELP_EMBED.fields = [];
+    }
+  }
 };
