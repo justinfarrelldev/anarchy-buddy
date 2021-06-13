@@ -36,17 +36,19 @@ const makeGroup = async (msg: Message, groupName?: string) => {
         groupName = collected.first().content;
       })
       .catch((err) => console.error(err));
+  }
 
-    msg.channel.send("Please write a description for the group.");
-    await msg.channel
-      .awaitMessages((m) => m.author.id == msg.author.id, {
-        max: 1,
-        time: BOT_COMMAND_WAIT_TIME_MS,
-      })
-      .then((collected) => {
-        description = collected.first().content;
-      });
+  msg.channel.send(`Add a description for ${groupName}.`);
+  await msg.channel
+    .awaitMessages((m) => m.author.id == msg.author.id, {
+      max: 1,
+      time: BOT_COMMAND_WAIT_TIME_MS,
+    })
+    .then((collected) => {
+      description = collected.first().content;
+    });
 
+  while (members.length == 0) {
     msg.channel.send("Please @mention the members of the group.");
     await msg.channel
       .awaitMessages((m) => m.author.id == msg.author.id, {
@@ -60,20 +62,21 @@ const makeGroup = async (msg: Message, groupName?: string) => {
             members.push(`${member.username}#${member.discriminator}`)
           );
       });
-
-    msg.channel.send("Add a custom color (optional).");
-    await msg.channel
-      .awaitMessages((m) => m.author.id == msg.author.id, {
-        max: 1,
-        time: BOT_COMMAND_WAIT_TIME_MS,
-      })
-      .then((collected) => {
-        if (collected.first().content != "")
-          color = stringToColor(collected.first().content);
-      });
-  } else {
-    console.log("Would do the other stuff");
   }
+
+  msg.channel.send("Add a custom color (optional).");
+  await msg.channel
+    .awaitMessages((m) => m.author.id == msg.author.id, {
+      max: 1,
+      time: BOT_COMMAND_WAIT_TIME_MS,
+    })
+    .then((collected) => {
+      // Regex for hex colors
+      if (/^#[0-9A-F]{6}$/i.test(collected.first().content)) {
+        color = collected.first().content;
+      } else if (collected.first().content != "")
+        color = stringToColor(collected.first().content);
+    });
 
   const params: DocumentClient.PutItemInput = {
     TableName: BOT_TEAM_DATABASE_NAME,
