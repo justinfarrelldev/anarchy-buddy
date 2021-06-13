@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+require("dotenv").config();
 
 const client = new Discord.Client();
 
@@ -107,5 +108,13 @@ describe("ping", () => {
   it("sends Pong", async () => {
     await ping(new Message("ping", channel, user), []);
     expect(channel.lastMessage.content).toBe("Pong");
+  });
+});
+
+describe("Environment variables", () => {
+  it("loads them", async () => {
+    expect(process.env.AWS_DEFAULT_REGION_BOT).not.toBe("");
+    expect(process.env.AWS_ACCESS_KEY_ID_BOT).not.toBe("");
+    expect(process.env.AWS_SECRET_ACCESS_KEY_BOT).not.toBe("");
   });
 });
