@@ -3,6 +3,6 @@ export interface Group {
   description: string;
   owner: string;
   members: string;
-  color: string;
+  color?: string;
   server: string;
 }

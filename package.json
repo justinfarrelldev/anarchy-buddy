@@ -16,7 +16,8 @@
   "dependencies": {
     "aws-sdk": "^2.927.0",
     "discord.js": "^12.5.3",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "string-to-color": "^2.2.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
