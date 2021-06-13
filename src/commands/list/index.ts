@@ -7,6 +7,7 @@ import { Message } from "discord.js";
 import { docClient } from "../..";
 import { BOT_TEAM_DATABASE_NAME } from "../../constants";
 import DynamoDB = require("aws-sdk/clients/dynamodb");
+const discord = require("discord.js");
 
 export const LIST_PREDICATE = "list";
 export const LIST_DESCRIPTION = "Lists various information regarding groups.";
@@ -26,6 +27,13 @@ const listPublicGroups = (msg: Message) => {
     .then(
       (result) => {
         console.log("Result: ", result);
+        result.Items.forEach((item) => {
+          let embed = new discord.MessageEmbed().setColor(
+            item["info"]["color"]
+          );
+
+          msg.channel.send(embed);
+        });
       },
       (rejected) => console.error(rejected)
     )
