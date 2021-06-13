@@ -3,6 +3,7 @@ import discord = require("discord.js");
 // The name to use for accessing the bot commands.
 export const BOT_COMMAND_NAME = "ab";
 export const BOT_TEAM_DATABASE_NAME = "anarchy-buddy-teams";
+export const BOT_COMMAND_WAIT_TIME_MS = 30000; // 30s
 
 interface ERRORS_INTERFACE {
   INVALID_COMMAND: string;
