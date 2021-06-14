@@ -26,11 +26,14 @@ const listPublicGroups = (msg: Message) => {
     .promise()
     .then(
       (result) => {
-        console.log("Result: ", result);
         result.Items.forEach((item) => {
-          let embed = new discord.MessageEmbed().setColor(
-            item["info"]["color"]
-          );
+          let embed = new discord.MessageEmbed()
+            .setColor(item["info"]["color"])
+            .setTitle(item["info"]["name"])
+            .addFields({
+              name: "Description",
+              value: item["info"]["description"],
+            });
 
           msg.channel.send(embed);
         });
