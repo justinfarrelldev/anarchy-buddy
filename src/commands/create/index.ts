@@ -50,6 +50,7 @@ const makePublicGroup = async (
   groupName?: string
 ) => {
   let members = [];
+  let timeout = false;
   if (!groupName) {
     msg.channel.send("Please specify the name for the group.");
     group.owner = `${msg.author.username}#${msg.author.discriminator}`;
@@ -59,9 +60,19 @@ const makePublicGroup = async (
         time: BOT_COMMAND_WAIT_TIME_MS,
       })
       .then((collected) => {
+        if (!collected.first()) {
+          timeout = true;
+          return;
+        }
+
         group.name = collected.first().content;
       })
       .catch((err) => console.error(err));
+  }
+
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
   }
 
   msg.channel.send(`Add a description for ${group.name}.`);
@@ -71,11 +82,20 @@ const makePublicGroup = async (
       time: BOT_COMMAND_WAIT_TIME_MS,
     })
     .then((collected) => {
+      if (!collected.first()) {
+        timeout = true;
+        return;
+      }
       group.description = collected.first().content;
     })
     .catch((err) => console.error(err));
 
-  while (members.length == 0) {
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
+  }
+  while (members.length == 0 && !timeout) {
+    if (timeout) return;
     msg.channel.send("Please @mention the members of the group.");
     await msg.channel
       .awaitMessages((m) => m.author.id == msg.author.id, {
@@ -83,6 +103,11 @@ const makePublicGroup = async (
         time: BOT_COMMAND_WAIT_TIME_MS,
       })
       .then((collected) => {
+        if (!collected.first()) {
+          timeout = true;
+          return;
+        }
+
         collected
           .first()
           .mentions.users.forEach((member) =>
@@ -93,6 +118,10 @@ const makePublicGroup = async (
       .catch((err) => console.error(err));
   }
 
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
+  }
   msg.channel.send("Add a custom color (optional).");
   await msg.channel
     .awaitMessages((m) => m.author.id == msg.author.id, {
@@ -100,6 +129,11 @@ const makePublicGroup = async (
       time: BOT_COMMAND_WAIT_TIME_MS,
     })
     .then((collected) => {
+      if (!collected.first()) {
+        timeout = true;
+        return;
+      }
+
       // Regex for hex colors
       if (/^#[0-9A-F]{6}$/i.test(collected.first().content)) {
         group.color = collected.first().content;
@@ -108,6 +142,10 @@ const makePublicGroup = async (
     })
     .catch((err) => console.error(err));
 
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
+  }
   uploadGroup(msg, group, false);
 };
 
@@ -117,6 +155,7 @@ const makePrivateGroup = async (
   groupName?: string
 ) => {
   let members = [];
+  let timeout = false;
 
   let dmMsg: Message = await msg.author.send(
     `Got it! Your secret is safe with me!`
@@ -131,11 +170,20 @@ const makePrivateGroup = async (
         time: BOT_COMMAND_WAIT_TIME_MS,
       })
       .then((collected) => {
+        if (!collected.first()) {
+          timeout = true;
+          return;
+        }
+
         group.name = collected.first().content;
       })
       .catch((err) => console.error(err));
   }
 
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
+  }
   await msg.author.send(`Add a description for ${group.name}.`);
   await dmMsg.channel
     .awaitMessages((m) => m.author.id == msg.author.id, {
@@ -143,11 +191,20 @@ const makePrivateGroup = async (
       time: BOT_COMMAND_WAIT_TIME_MS,
     })
     .then((collected) => {
+      if (!collected.first()) {
+        timeout = true;
+        return;
+      }
+
       group.description = collected.first().content;
     })
     .catch((err) => console.error(err));
 
-  while (members.length == 0) {
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
+  }
+  while (members.length == 0 && !timeout) {
     msg.author.send(
       `Please @mention the members of the group inside the bot channel within ${
         BOT_COMMAND_WAIT_TIME_MS_PRIVATE / (1000 * 60)
@@ -159,6 +216,11 @@ const makePrivateGroup = async (
         time: BOT_COMMAND_WAIT_TIME_MS,
       })
       .then((collected) => {
+        if (!collected.first()) {
+          timeout = true;
+          return;
+        }
+
         collected
           .first()
           .mentions.users.forEach((member) =>
@@ -173,8 +235,10 @@ const makePrivateGroup = async (
       .catch((err) => console.error(err));
   }
 
-  console.log("Group members now: ", group.members);
-
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
+  }
   msg.author.send("Add a custom color (optional).");
   await dmMsg.channel
     .awaitMessages((m) => m.author.id == msg.author.id, {
@@ -182,6 +246,11 @@ const makePrivateGroup = async (
       time: BOT_COMMAND_WAIT_TIME_MS,
     })
     .then((collected) => {
+      if (!collected.first()) {
+        timeout = true;
+        return;
+      }
+
       // Regex for hex colors
       if (/^#[0-9A-F]{6}$/i.test(collected.first().content)) {
         group.color = collected.first().content;
@@ -190,6 +259,10 @@ const makePrivateGroup = async (
     })
     .catch((err) => console.error(err));
 
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
+  }
   uploadGroup(msg, group, true);
 };
 
@@ -213,6 +286,11 @@ const makeGroup = async (msg: Message, groupName?: string) => {
       time: BOT_COMMAND_WAIT_TIME_MS,
     })
     .then((collected) => {
+      if (!collected.first()) {
+        msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+        return;
+      }
+
       group.privateGroup =
         collected.first().content.toLowerCase() == "yes"
           ? (group.privateGroup = true)

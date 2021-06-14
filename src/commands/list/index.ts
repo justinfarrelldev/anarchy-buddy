@@ -27,10 +27,17 @@ const listPublicGroups = (msg: Message) => {
     .then(
       (result) => {
         result.Items.forEach((item) => {
+          console.log(item["info"]["members"]);
+          const members = item["info"]["members"]
+            ? {
+                name: "Members",
+                value: item["info"]["members"].join(", "),
+              }
+            : {};
           let embed = new discord.MessageEmbed()
             .setColor(item["info"]["color"])
             .setTitle(item["info"]["name"])
-            .addFields({
+            .addFields(members, {
               name: "Description",
               value: item["info"]["description"],
             });

@@ -3,17 +3,19 @@ import discord = require("discord.js");
 // The name to use for accessing the bot commands.
 export const BOT_COMMAND_NAME = "ab";
 export const BOT_TEAM_DATABASE_NAME = "anarchy-buddy-teams";
-export const BOT_COMMAND_WAIT_TIME_MS = 30000; // 30s
+export const BOT_COMMAND_WAIT_TIME_MS = 60000; // 1 min
 export const BOT_COMMAND_WAIT_TIME_MS_PRIVATE = 300000; // 5 mins
 
 interface ERRORS_INTERFACE {
   INVALID_COMMAND: string;
   DB_ERROR: string;
+  GROUP_CREATION_TIMEOUT: string;
 }
 
 export const ERRORS: ERRORS_INTERFACE = {
   INVALID_COMMAND: "Invalid command.",
   DB_ERROR: "A database error occurred.",
+  GROUP_CREATION_TIMEOUT: "Timed out. Group info discarded.",
 };
 
 export const Error = (msg: Message, err: keyof ERRORS_INTERFACE) => {
