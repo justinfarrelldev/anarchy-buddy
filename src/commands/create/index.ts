@@ -314,4 +314,5 @@ export const Create = async (msg: Message, command: Command) => {
     case "group":
       makeGroup(msg, command.args.length > 1 ? command.args[1] : undefined);
   }
+  return true;
 };
