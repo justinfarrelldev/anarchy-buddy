@@ -64,7 +64,6 @@ const makePublicGroup = async (
           timeout = true;
           return;
         }
-
         group.name = collected.first().content;
       })
       .catch((err) => console.error(err));
@@ -308,7 +307,7 @@ const makeGroup = async (msg: Message, groupName?: string) => {
 export const Create = async (msg: Message, command: Command) => {
   if (command.args.length === 0) {
     unknownCommandError(msg, CREATE_USAGE);
-    return;
+    return false;
   }
 
   switch (command.args[0].toLowerCase()) {

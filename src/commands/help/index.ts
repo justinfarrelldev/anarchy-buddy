@@ -30,7 +30,7 @@ const GetDefaultCommands = (msg: Message) => {
 export const Help = (msg: Message, command: Command) => {
   if (command.args.length === 0) {
     GetDefaultCommands(msg);
-    return;
+    return false;
   }
 
   for (const field in COMMAND_LIST) {

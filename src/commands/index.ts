@@ -17,23 +17,21 @@ export const COMMAND_LIST = {
  * @param args The rest of the arguments after the command.
  * Returns true if a command was found, else false.
  */
-export const ResolveCommand = (msg: Message): boolean => {
+export const ResolveCommand = async (msg: Message) => {
   const messageTokens = msg.content.split(" ");
   let command = {
     predicate: messageTokens[1],
     args: messageTokens.filter((_: any, idx: number) => idx > 1),
   };
+  let result: boolean = false;
   switch (messageTokens[1]) {
     case HELP_PREDICATE:
-      Help(msg, command);
-      return true;
+      result = Help(msg, command);
     case CREATE_PREDICATE:
-      Create(msg, command);
-      return true;
+      result = await Create(msg, command);
     case LIST_PREDICATE:
-      List(msg, command);
-      return true;
+      result = List(msg, command);
   }
 
-  return false;
+  return result == false ? false : true;
 };

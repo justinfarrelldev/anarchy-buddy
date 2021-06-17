@@ -53,7 +53,6 @@ const listPublicGroups = (msg: Message) => {
 export const List = (msg: Message, command: Command) => {
   if (!command.args[0]) return false;
 
-  console.log(command);
   switch (command.args[0].toLowerCase()) {
     case "group":
       listPublicGroups(msg);

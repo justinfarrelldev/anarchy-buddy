@@ -6,3 +6,4 @@ build/*
 .env
 .DS_STORE
 anarchy-buddy.pem
+coverage
