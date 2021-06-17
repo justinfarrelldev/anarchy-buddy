@@ -4,7 +4,8 @@ import {
   TextChannel,
   Guild,
 } from "discord.js";
-import { ResolveCommand } from "../commands/index";
+import { COMMAND_LIST, ResolveCommand } from "../commands/index";
+import { BOT_COMMAND_NAME } from "../constants";
 
 const Discord = require("discord.js");
 require("dotenv").config();
@@ -19,14 +20,8 @@ describe("Environment variables", () => {
   });
 });
 
-describe("Bot", () => {
-  it("executes the help command", async () => {
-    let guild = new Discord.Guild(discordClient, {
-      id: Discord.SnowflakeUtil.generate(),
-    });
-    let user = new Discord.User(discordClient, {
-      id: Discord.SnowflakeUtil.generate(),
-    });
+/* 
+
     let member = new Discord.GuildMember(
       discordClient,
       { id: Discord.SnowflakeUtil.generate(), user: { id: user.id } },
@@ -37,22 +32,37 @@ describe("Bot", () => {
       { id: Discord.SnowflakeUtil.generate() },
       guild
     );
-    let message = new DiscordMessage(
-      discordClient,
-      {
-        content: "ab help",
-        author: { username: "BiggestBulb", discriminator: 1234 },
-        id: "test",
-      },
-      new Discord.TextChannel(new Guild(discordClient, {}), {
-        client: discordClient,
-        guild: new Guild(discordClient, {}),
-        id: "channel-id",
-      })
-    );
 
-    const valid = ResolveCommand(message);
-    console.log("Valid: ", valid);
-    expect(valid).toBe(true);
+*/
+
+describe("Bot", () => {
+  it("sees the commands as valid", async () => {
+    let numValidCommands = 0;
+
+    Object.keys(COMMAND_LIST).forEach((command) => {
+      let guild = new Discord.Guild(discordClient, {
+        id: Discord.SnowflakeUtil.generate(),
+      });
+      let user = new Discord.User(discordClient, {
+        id: Discord.SnowflakeUtil.generate(),
+      });
+      let message = new DiscordMessage(
+        discordClient,
+        {
+          content: `${BOT_COMMAND_NAME} ${command}`,
+          author: { username: "BiggestBulb", discriminator: 1234 },
+          id: "test",
+        },
+        new Discord.TextChannel(new Guild(discordClient, {}), {
+          client: discordClient,
+          guild: new Guild(discordClient, {}),
+          id: "channel-id",
+        })
+      );
+
+      if (ResolveCommand(message)) numValidCommands++;
+    });
+
+    expect(numValidCommands).toBe(Object.keys(COMMAND_LIST).length);
   });
 });
