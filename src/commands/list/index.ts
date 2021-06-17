@@ -6,7 +6,6 @@ import { Command } from "../../command";
 import { Message } from "discord.js";
 import { docClient } from "../..";
 import { BOT_TEAM_DATABASE_NAME } from "../../constants";
-import DynamoDB = require("aws-sdk/clients/dynamodb");
 const discord = require("discord.js");
 
 export const LIST_PREDICATE = "list";
@@ -27,7 +26,7 @@ const listPublicGroups = (msg: Message) => {
     .then(
       (result) => {
         result.Items.forEach((item) => {
-          console.log(item["info"]["members"]);
+          // TODO Clean this up so that it's not arrays
           const members = item["info"]["members"]
             ? {
                 name: "Members",
