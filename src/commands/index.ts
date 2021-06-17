@@ -23,15 +23,12 @@ export const ResolveCommand = async (msg: Message) => {
     predicate: messageTokens[1],
     args: messageTokens.filter((_: any, idx: number) => idx > 1),
   };
-  let result: boolean = false;
   switch (messageTokens[1]) {
     case HELP_PREDICATE:
-      result = Help(msg, command);
+      return Help(msg, command);
     case CREATE_PREDICATE:
-      result = await Create(msg, command);
+      return await Create(msg, command);
     case LIST_PREDICATE:
-      result = List(msg, command);
+      return List(msg, command);
   }
-
-  return result == false ? false : true;
 };

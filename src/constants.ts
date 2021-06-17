@@ -18,11 +18,10 @@ export const ERRORS: ERRORS_INTERFACE = {
   GROUP_CREATION_TIMEOUT: "Timed out. Group info discarded.",
 };
 
-export const Error = (msg: Message, err: keyof ERRORS_INTERFACE) => {
+export const LogUserError = (msg: Message, err: keyof ERRORS_INTERFACE) => {
   console.error(
     `Error by ${msg.author.username}: ${err} for message "${msg.content}"`
   );
-  msg.channel.send(ERRORS[err]);
 };
 
 export let HELP_EMBED = new discord.MessageEmbed()
@@ -48,5 +47,6 @@ export const sendHelpMessageToChannel = (
  * @param usage Extra information to be displayed. Required on purpose.
  */
 export const unknownCommandError = (msg: Message, usage: string) => {
+  LogUserError(msg, "INVALID_COMMAND");
   msg.channel.send(`${ERRORS.INVALID_COMMAND} Usage: ${usage}`);
 };

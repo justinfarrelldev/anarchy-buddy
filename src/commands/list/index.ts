@@ -5,7 +5,7 @@
 import { Command } from "../../command";
 import { Message } from "discord.js";
 import { docClient } from "../..";
-import { BOT_TEAM_DATABASE_NAME } from "../../constants";
+import { BOT_TEAM_DATABASE_NAME, unknownCommandError } from "../../constants";
 const discord = require("discord.js");
 
 export const LIST_PREDICATE = "list";
@@ -13,7 +13,6 @@ export const LIST_DESCRIPTION = "Lists various information regarding groups.";
 export const LIST_USAGE = "list [group | groups]"; // group and groups both do the same thing, but it would be best to make both list the groups
 
 const listPublicGroups = (msg: Message) => {
-  console.log(`${msg.author.username}#${msg.author.discriminator}`);
   docClient
     .scan({
       TableName: BOT_TEAM_DATABASE_NAME,
@@ -46,11 +45,18 @@ const listPublicGroups = (msg: Message) => {
       },
       (rejected) => console.error(rejected)
     )
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err);
+      return false;
+    });
+  return true;
 };
 
 export const List = (msg: Message, command: Command) => {
-  if (!command.args[0]) return false;
+  if (!command.args[0]) {
+    unknownCommandError(msg, LIST_USAGE);
+    return false;
+  }
 
   switch (command.args[0].toLowerCase()) {
     case "group":
