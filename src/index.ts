@@ -6,6 +6,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 require("dotenv").config();
 import Discord = require("discord.js");
 import AWS = require("aws-sdk");
+import { UserList } from "./user";
 
 AWS.config.update({
   region: process.env.AWS_DEFAULT_REGION_BOT,
@@ -14,6 +15,7 @@ AWS.config.update({
 });
 
 export const docClient: DocumentClient = new AWS.DynamoDB.DocumentClient();
+export const userList: UserList = new UserList();
 const discordClient: Client = new Discord.Client();
 
 discordClient.on("ready", () => {
