@@ -3,7 +3,7 @@
  */
 
 import { Command } from "../../command";
-import { Message } from "discord.js";
+import { Collection, Message } from "discord.js";
 import {
   BOT_COMMAND_WAIT_TIME_MS,
   BOT_COMMAND_WAIT_TIME_MS_PRIVATE,
@@ -42,6 +42,28 @@ const uploadGroup = async (
       return console.error(`${ERRORS.DB_ERROR}: ${error}`);
     }
   });
+};
+
+const takeInput = async (
+  msg: Message,
+  messageToDisplay: string,
+  group: Group,
+  waitTimeInMillis: number,
+  onFulfilled: (input: Collection<string, Message>) => void | PromiseLike<void>
+): Promise<{ timeout: boolean; group?: Group }> => {
+  msg.channel.send(messageToDisplay);
+  await msg.channel
+    .awaitMessages((m) => m.author.id == msg.author.id, {
+      max: 1,
+      time: waitTimeInMillis,
+    })
+    .then((collected) => {
+      // TODO logic for the user list goes here, need to rewrite it
+      onFulfilled(collected);
+    })
+    .catch((err) => console.error(err));
+
+  return { timeout: false, group };
 };
 
 const makePublicGroup = async (
