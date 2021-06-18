@@ -21,4 +21,12 @@ export class UserList {
       this.usingCommandList.indexOf(entryToRemove),
       1
     ));
+  public IncludedInUserList = (entryToCheck: UsingCommandList) => {
+    return this.usingCommandList.some(
+      (usingCommand) =>
+        usingCommand.username === entryToCheck.username &&
+        usingCommand.discriminator === entryToCheck.discriminator &&
+        usingCommand.commandPredicate === entryToCheck.commandPredicate
+    );
+  };
 }
