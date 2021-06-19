@@ -39,4 +39,16 @@ export class UserList {
         usingCommand.discriminator === userInfo.discriminator
     );
   };
+
+  public UserInListExceptPredicate = (
+    userInfo: UserInfo,
+    excludedPredicate: string
+  ) => {
+    return this.usingCommandList.some(
+      (usingCommand) =>
+        usingCommand.username === userInfo.username &&
+        usingCommand.discriminator === userInfo.discriminator &&
+        usingCommand.commandPredicate !== excludedPredicate
+    );
+  };
 }

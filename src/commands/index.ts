@@ -1,6 +1,8 @@
 // Module map to show predicates and execute them if they are encountered
 
 import { Message } from "discord.js";
+import { userList } from "..";
+import { ERRORS } from "../constants";
 import { Create, CREATE_DESCRIPTION, CREATE_PREDICATE } from "./create";
 import { Help, HELP_DESCRIPTION, HELP_PREDICATE } from "./help";
 import { List, LIST_DESCRIPTION, LIST_PREDICATE } from "./list";
@@ -23,6 +25,16 @@ export const ResolveCommand = async (msg: Message) => {
     predicate: messageTokens[1],
     args: messageTokens.filter((_: any, idx: number) => idx > 1),
   };
+  if (
+    userList.UserInUserList({
+      username: msg.author.username,
+      discriminator: msg.author.discriminator,
+    })
+  ) {
+    msg.channel.send(`${ERRORS.COMMAND_IN_PROGRESS}`);
+    return;
+  }
+  InitializeCommand(msg, messageTokens[1]);
   switch (messageTokens[1]) {
     case HELP_PREDICATE:
       return Help(msg, command);
@@ -31,4 +43,16 @@ export const ResolveCommand = async (msg: Message) => {
     case LIST_PREDICATE:
       return List(msg, command);
   }
+};
+
+/*
+ * Initializes a command to run. Used at the beginning of every command.
+ */
+
+export const InitializeCommand = (msg: Message, predicate: string) => {
+  userList.AddToUsingCommandList({
+    username: msg.author.username,
+    discriminator: msg.author.discriminator,
+    commandPredicate: predicate,
+  });
 };

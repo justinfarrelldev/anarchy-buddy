@@ -2,7 +2,7 @@
  * This is the create command and all related functionality.
  */
 
-import { Command } from "../../command";
+import { Command, IsCommand } from "../../command";
 import { Collection, Message } from "discord.js";
 import {
   BOT_COMMAND_WAIT_TIME_MS,
@@ -44,6 +44,17 @@ const uploadGroup = async (
   });
 };
 
+const checkCollected = (collected: Collection<string, Message>, msg: Message) =>
+  !userList.UserInListExceptPredicate(
+    {
+      username: msg.author.username,
+      discriminator: msg.author.discriminator,
+    },
+    CREATE_PREDICATE
+  ) && !IsCommand(collected.first())
+    ? true
+    : false;
+
 const takeInput = async (
   msg: Message,
   messageToDisplay: string,
@@ -60,12 +71,8 @@ const takeInput = async (
         time: waitTimeInMillis,
       })
       .then((collected) => {
-        if (
-          !userList.UserInUserList({
-            username: msg.author.username,
-            discriminator: msg.author.discriminator,
-          })
-        ) {
+        if (checkCollected(collected, msg)) {
+          console.log("has been fulfilled");
           fulfilled = true;
           onFulfilled(collected);
         }
@@ -308,15 +315,12 @@ const makeGroup = async (msg: Message, groupName?: string) => {
     server: msg.guild.id,
   };
 
-  msg.channel.send(
-    "Will this group be private? (Will DM you asking the details there for some privacy 😉) [yes/no]"
-  );
-  await msg.channel
-    .awaitMessages((m) => m.author.id == msg.author.id, {
-      max: 1,
-      time: BOT_COMMAND_WAIT_TIME_MS,
-    })
-    .then((collected) => {
+  await takeInput(
+    msg,
+    "Will this group be private? (Will DM you asking the details there for some privacy 😉) [yes/no]",
+    group,
+    BOT_COMMAND_WAIT_TIME_MS,
+    (collected) => {
       if (!collected.first()) {
         msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
         return;
@@ -326,8 +330,19 @@ const makeGroup = async (msg: Message, groupName?: string) => {
         collected.first().content.toLowerCase() == "yes"
           ? (group.privateGroup = true)
           : (group.privateGroup = false);
-    })
-    .catch((err) => console.error(err));
+    }
+  );
+
+  // msg.channel.send(
+  //   "Will this group be private? (Will DM you asking the details there for some privacy 😉) [yes/no]"
+  // );
+  // await msg.channel
+  //   .awaitMessages((m) => m.author.id == msg.author.id, {
+  //     max: 1,
+  //     time: BOT_COMMAND_WAIT_TIME_MS,
+  //   })
+  //   .then()
+  //   .catch((err) => console.error(err));
 
   if (!group.privateGroup) {
     makePublicGroup(msg, group, groupName);

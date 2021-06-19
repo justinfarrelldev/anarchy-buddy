@@ -10,12 +10,14 @@ interface ERRORS_INTERFACE {
   INVALID_COMMAND: string;
   DB_ERROR: string;
   GROUP_CREATION_TIMEOUT: string;
+  COMMAND_IN_PROGRESS: string;
 }
 
 export const ERRORS: ERRORS_INTERFACE = {
   INVALID_COMMAND: "Invalid command.",
   DB_ERROR: "A database error occurred.",
   GROUP_CREATION_TIMEOUT: "Timed out. Group info discarded.",
+  COMMAND_IN_PROGRESS: "A command is already in progress.",
 };
 
 export const LogUserError = (msg: Message, err: keyof ERRORS_INTERFACE) => {

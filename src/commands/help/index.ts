@@ -6,6 +6,7 @@ import { Command } from "../../command";
 import { Message, EmbedFieldData } from "discord.js";
 import { COMMAND_LIST } from "..";
 import { HELP_EMBED } from "../../constants";
+import { userList } from "../..";
 
 export const HELP_PREDICATE = "help";
 export const HELP_DESCRIPTION =
