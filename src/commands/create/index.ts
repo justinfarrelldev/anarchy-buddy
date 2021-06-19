@@ -63,27 +63,40 @@ const takeInput = async (
   group: Group,
   waitTimeInMillis: number,
   onFulfilled: (input: Collection<string, Message>) => void | PromiseLike<void>,
-  privateGroup?: boolean
+  privateGroup?: boolean,
+  dmMsg?: Message
 ): Promise<{ timeout: boolean; group?: Group }> => {
   let fulfilled = false;
   while (!fulfilled) {
     if (!privateGroup) {
       msg.channel.send(messageToDisplay);
+      await msg.channel
+        .awaitMessages((m) => m.author.id == msg.author.id, {
+          max: 1,
+          time: waitTimeInMillis,
+        })
+        .then((collected) => {
+          if (checkCollected(collected, msg)) {
+            fulfilled = true;
+            onFulfilled(collected);
+          }
+        })
+        .catch((err) => console.error(err));
     } else {
       msg.author.send(messageToDisplay);
+      await dmMsg.channel
+        .awaitMessages((m) => m.author.id == msg.author.id, {
+          max: 1,
+          time: waitTimeInMillis,
+        })
+        .then((collected) => {
+          if (checkCollected(collected, msg)) {
+            fulfilled = true;
+            onFulfilled(collected);
+          }
+        })
+        .catch((err) => console.error(err));
     }
-    await msg.channel
-      .awaitMessages((m) => m.author.id == msg.author.id, {
-        max: 1,
-        time: waitTimeInMillis,
-      })
-      .then((collected) => {
-        if (checkCollected(collected, msg)) {
-          fulfilled = true;
-          onFulfilled(collected);
-        }
-      })
-      .catch((err) => console.error(err));
   }
 
   return { timeout: false, group };
@@ -205,9 +218,8 @@ const makePrivateGroup = async (
 
   if (!groupName) {
     group.owner = `${msg.author.username}#${msg.author.discriminator}`;
-
     await takeInput(
-      dmMsg,
+      msg,
       "What would you like to call this group?",
       group,
       BOT_COMMAND_WAIT_TIME_MS,
@@ -219,7 +231,8 @@ const makePrivateGroup = async (
 
         group.name = collected.first().content;
       },
-      true
+      true,
+      dmMsg
     );
   }
 
@@ -229,7 +242,7 @@ const makePrivateGroup = async (
   }
 
   await takeInput(
-    dmMsg,
+    msg,
     `Add a description for ${group.name}.`,
     group,
     BOT_COMMAND_WAIT_TIME_MS,
@@ -241,7 +254,8 @@ const makePrivateGroup = async (
 
       group.description = collected.first().content;
     },
-    true
+    true,
+    dmMsg
   );
 
   if (timeout) {
@@ -250,7 +264,7 @@ const makePrivateGroup = async (
   }
   while (members.length == 0 && !timeout) {
     await takeInput(
-      dmMsg,
+      msg,
       `Please @mention the members of the group inside the bot channel within ${
         BOT_COMMAND_WAIT_TIME_MS_PRIVATE / (1000 * 60)
       } minutes. You can use spoiler text if you wish by surrounding the text with pipes like so: ll @ThisIsHidden ll. The message will be automatically deleted.`,
@@ -273,7 +287,8 @@ const makePrivateGroup = async (
           reason: "Getting rid of a member list for a private group.",
         });
       },
-      true
+      true,
+      msg // ! ON PURPOSE to allow for listening to the main channel
     );
   }
 
@@ -283,7 +298,7 @@ const makePrivateGroup = async (
   }
 
   await takeInput(
-    dmMsg,
+    msg,
     "Add a custom color (optional).",
     group,
     BOT_COMMAND_WAIT_TIME_MS,
@@ -299,7 +314,8 @@ const makePrivateGroup = async (
       } else if (collected.first().content != "")
         group.color = stringToColor(collected.first().content);
     },
-    true
+    true,
+    dmMsg
   );
 
   if (timeout) {
