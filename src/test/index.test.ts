@@ -33,6 +33,12 @@ describe("Environment variables", () => {
       guild
     );
 
+      let guild = new Discord.Guild(discordClient, {
+        id: Discord.SnowflakeUtil.generate(),
+      });
+      let user = new Discord.User(discordClient, {
+        id: Discord.SnowflakeUtil.generate(),
+      });
 */
 
 describe("Bot", () => {
@@ -40,12 +46,6 @@ describe("Bot", () => {
     let numValidCommands = 0;
 
     Object.keys(COMMAND_LIST).forEach((command) => {
-      let guild = new Discord.Guild(discordClient, {
-        id: Discord.SnowflakeUtil.generate(),
-      });
-      let user = new Discord.User(discordClient, {
-        id: Discord.SnowflakeUtil.generate(),
-      });
       let message = new DiscordMessage(
         discordClient,
         {
