@@ -2,6 +2,10 @@ import { CREATE_PREDICATE } from "../commands/create";
 import { HELP_PREDICATE } from "../commands/help";
 import { UserList, UsingCommandList } from "../user";
 
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
 describe("UserList", () => {
   it("can be added to", () => {
     const userList = new UserList();

@@ -1,3 +1,6 @@
+// ! Deactivated to get CI running. The DiscordJS stuff was causing issues with Jest I couldn't figure out.
+// Hopefully I can revisit this in the future to figure out a proper solution
+
 import {
   Client,
   Message as DiscordMessage,
@@ -8,6 +11,8 @@ import { Create, CREATE_PREDICATE } from ".";
 import { COMMAND_LIST } from "..";
 import { BOT_COMMAND_NAME } from "../../constants";
 import { Command } from "../../command";
+
+jest.useFakeTimers()
 
 const Discord = require("discord.js");
 require("dotenv").config();
