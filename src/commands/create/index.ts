@@ -35,6 +35,7 @@ const uploadGroup = async (
   };
 
   docClient.put(params, (error) => {
+    CleanUpAfterCommand(msg, CREATE_PREDICATE);
     if (!error) {
       return !privateGroup
         ? msg.channel.send(`Successfully created ${groupToUpload.name}.`)
@@ -93,7 +94,7 @@ const makePublicGroup = async (
   let timeout = false;
   if (!groupName) {
     group.owner = `${msg.author.username}#${msg.author.discriminator}`;
-    takeInput(
+    await takeInput(
       msg,
       "Please specify the name for the group.",
       group,
@@ -113,20 +114,19 @@ const makePublicGroup = async (
     return;
   }
 
-  msg.channel.send(`Add a description for ${group.name}.`);
-  await msg.channel
-    .awaitMessages((m) => m.author.id == msg.author.id, {
-      max: 1,
-      time: BOT_COMMAND_WAIT_TIME_MS,
-    })
-    .then((collected) => {
+  await takeInput(
+    msg,
+    `Add a description for ${group.name}.`,
+    group,
+    BOT_COMMAND_WAIT_TIME_MS,
+    (collected) => {
       if (!collected.first()) {
         timeout = true;
         return;
       }
       group.description = collected.first().content;
-    })
-    .catch((err) => console.error(err));
+    }
+  );
 
   if (timeout) {
     msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
@@ -134,13 +134,13 @@ const makePublicGroup = async (
   }
   while (members.length == 0 && !timeout) {
     if (timeout) return;
-    msg.channel.send("Please @mention the members of the group.");
-    await msg.channel
-      .awaitMessages((m) => m.author.id == msg.author.id, {
-        max: 1,
-        time: BOT_COMMAND_WAIT_TIME_MS,
-      })
-      .then((collected) => {
+
+    await takeInput(
+      msg,
+      "Please @mention the members of the group.",
+      group,
+      BOT_COMMAND_WAIT_TIME_MS,
+      (collected) => {
         if (!collected.first()) {
           timeout = true;
           return;
@@ -152,21 +152,21 @@ const makePublicGroup = async (
             members.push(`${member.username}#${member.discriminator}`)
           );
         group.members = members;
-      })
-      .catch((err) => console.error(err));
+      }
+    );
   }
 
   if (timeout) {
     msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
     return;
   }
-  msg.channel.send("Add a custom color (optional).");
-  await msg.channel
-    .awaitMessages((m) => m.author.id == msg.author.id, {
-      max: 1,
-      time: BOT_COMMAND_WAIT_TIME_MS,
-    })
-    .then((collected) => {
+
+  await takeInput(
+    msg,
+    "Add a custom color (optional).",
+    group,
+    BOT_COMMAND_WAIT_TIME_MS,
+    (collected) => {
       if (!collected.first()) {
         timeout = true;
         return;
@@ -177,8 +177,8 @@ const makePublicGroup = async (
         group.color = collected.first().content;
       } else if (collected.first().content != "")
         group.color = stringToColor(collected.first().content);
-    })
-    .catch((err) => console.error(err));
+    }
+  );
 
   if (timeout) {
     msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
