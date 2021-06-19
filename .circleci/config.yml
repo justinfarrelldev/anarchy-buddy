@@ -1,0 +1,23 @@
+version: 2.1
+jobs: 
+  run_tests: 
+    docker: 
+      - image: cimg/node:14.17.1
+    steps: 
+      - checkout
+      - run: 
+          name: Install dependencies
+          command: |
+            npm install --save
+      - run: 
+          name: Run unit tests 
+          command: |
+            npm run test-out
+      - store_test_results:
+          path: test_results 
+      - store_artifacts: 
+          path: test_results
+workflows:
+  test_build: 
+    jobs: 
+      - run_tests 

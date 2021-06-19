@@ -7,3 +7,5 @@ build/*
 .DS_STORE
 anarchy-buddy.pem
 coverage
+
+test_results/test_results.json
