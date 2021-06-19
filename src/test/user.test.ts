@@ -2,11 +2,6 @@ import { CREATE_PREDICATE } from "../commands/create";
 import { HELP_PREDICATE } from "../commands/help";
 import { UserList, UsingCommandList } from "../user";
 
-// ! Temporarily deactivated until I can figure out what issues this file has
-beforeEach(() => {
-  jest.useFakeTimers();
-});
-
 describe("UserList", () => {
   it("can be added to", () => {
     const userList = new UserList();

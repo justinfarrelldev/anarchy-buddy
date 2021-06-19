@@ -1,9 +1,5 @@
 import { IsCommand } from "../command";
 
-beforeEach(() => {
-  jest.useFakeTimers();
-});
-
 describe("IsCommand", () => {
   it("can tell if an input is a command or not", () => {
     const input1 = "ab help",
