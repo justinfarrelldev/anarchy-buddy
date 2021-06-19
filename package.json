@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --passWithNoTests --runInBand",
-    "test-watch": "jest --watch --passWithNoTests --runInBand",
-    "test-out": "mkdir -p test_results && jest --ci --reporters=default --reporters=jest-junit --passWithNoTests --json --outputFile=./test_results/test_results.json --runInBand",
+    "test": "jest --passWithNoTests --maxWorkers=2",
+    "test-watch": "jest --watch --passWithNoTests --maxWorkers=2",
+    "test-out": "mkdir -p test_results && jest --ci --reporters=default --reporters=jest-junit --passWithNoTests --json --outputFile=./test_results/test_results.json --maxWorkers=2", 
     "build": "rimraf build && tsc && rollup -c rollup.config.js && cp package.json ./build/package.json && cp .env ./build/.env && cd build && npm install --only=production",
     "build-dev-watch": "rimraf build && tsc && rollup -c rollup.config.js && cp package.json ./build/package.json && cp .env ./build/.env && cd build && npm install --only=production && tsc -w",
     "start": "node ./index.js",
