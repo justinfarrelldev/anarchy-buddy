@@ -12,7 +12,7 @@ describe("UserList", () => {
     } as UsingCommandList);
 
     expect(userList.usingCommandList).toHaveLength(1);
-    expect(userList.usingCommandList[0]).toMatchObject({
+    expect(JSON.parse(userList.usingCommandList[0])).toMatchObject({
       username: "Test",
       discriminator: "1234",
       commandPredicate: "help",
@@ -42,7 +42,7 @@ describe("UserList", () => {
     } as UsingCommandList);
 
     expect(userList.usingCommandList).toHaveLength(1);
-    expect(userList.usingCommandList[0]).toMatchObject({
+    expect(JSON.parse(userList.usingCommandList[0])).toMatchObject({
       username: "New Test 2",
       discriminator: "4321",
       commandPredicate: "create",

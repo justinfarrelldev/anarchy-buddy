@@ -10,45 +10,43 @@ export type UsingCommandList = UserInfo & {
 };
 
 export class UserList {
-  usingCommandList: UsingCommandList[] = [];
+  usingCommandList: string[] = []; // string so we can JSON.stringify it because Javascript loves to be weird when objects and arrays are involved
   /**
    * Creates an input array which is only accessible through getters and setters to set the users that are
    * currently using a command
    */
 
   public AddToUsingCommandList = (newEntry: UsingCommandList) =>
-    this.usingCommandList.push(newEntry as UsingCommandList);
+    this.usingCommandList.push(JSON.stringify(newEntry));
 
   public RemoveFromUsingCommandList = (entryToRemove: UsingCommandList) =>
-    (this.usingCommandList = this.usingCommandList.splice(
-      this.usingCommandList.indexOf(entryToRemove as UsingCommandList),
-      1
+    (this.usingCommandList = this.usingCommandList.filter(
+      (userCommand) => JSON.stringify(entryToRemove) != userCommand
     ));
   public IncludedInUserList = (entryToCheck: UsingCommandList) => {
-    return this.usingCommandList.some(
-      (usingCommand) =>
-        usingCommand.username === entryToCheck.username &&
-        usingCommand.discriminator === entryToCheck.discriminator &&
-        usingCommand.commandPredicate === entryToCheck.commandPredicate
-    );
+    return this.usingCommandList.includes(JSON.stringify(entryToCheck));
   };
   public UserInUserList = (userInfo: UserInfo) => {
-    return this.usingCommandList.some(
-      (usingCommand) =>
-        usingCommand.username === userInfo.username &&
-        usingCommand.discriminator === userInfo.discriminator
-    );
+    return this.usingCommandList.some((usingCommand) => {
+      const parsed = JSON.parse(usingCommand);
+      return (
+        parsed.username === userInfo.username &&
+        parsed.discriminator === userInfo.discriminator
+      );
+    });
   };
 
   public UserInListExceptPredicate = (
     userInfo: UserInfo,
     excludedPredicate: string
   ) => {
-    return this.usingCommandList.some(
-      (usingCommand) =>
-        usingCommand.username === userInfo.username &&
-        usingCommand.discriminator === userInfo.discriminator &&
-        usingCommand.commandPredicate !== excludedPredicate
-    );
+    return this.usingCommandList.some((usingCommand) => {
+      const parsed = JSON.parse(usingCommand);
+      return (
+        parsed.username === userInfo.username &&
+        parsed.discriminator === userInfo.discriminator &&
+        parsed.commandPredicate !== excludedPredicate
+      );
+    });
   };
 }
