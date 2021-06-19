@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --passWithNoTests",
     "test-watch": "jest --watch --passWithNoTests",
-    "test-out": "jest --passWithNoTests --json --outputFile=./test_results/test_results.json",
+    "test-out": "mkdir -p test_results && jest --passWithNoTests --json --outputFile=./test_results/test_results.json",
     "build": "rimraf build && tsc && rollup -c rollup.config.js && cp package.json ./build/package.json && cp .env ./build/.env && cd build && npm install --only=production",
     "build-dev-watch": "rimraf build && tsc && rollup -c rollup.config.js && cp package.json ./build/package.json && cp .env ./build/.env && cd build && npm install --only=production && tsc -w", 
     "start": "node ./index.js",
