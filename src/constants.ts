@@ -21,7 +21,7 @@ export const ERRORS: ERRORS_INTERFACE = {
 };
 
 export const LogUserError = (msg: Message, err: keyof ERRORS_INTERFACE) => {
-  console.error(
+  console.log(
     `Error by ${msg.author.username}: ${err} for message "${msg.content}"`
   );
 };
