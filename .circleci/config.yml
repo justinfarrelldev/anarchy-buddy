@@ -17,7 +17,21 @@ jobs:
           path: test_results 
       - store_artifacts: 
           path: test_results
+  build: 
+    docker: 
+      - image: cimg/node:14.17.1
+    steps: 
+      - checkout
+      - run: 
+          name: Install dependencies
+          command: |
+            npm install --save
+      - run: 
+          name: Build the project
+          command: | 
+            npm run build
 workflows:
   test_build: 
     jobs: 
-      - run_tests 
+      - run_tests
+      - build
