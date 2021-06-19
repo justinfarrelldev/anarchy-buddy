@@ -81,7 +81,6 @@ describe("Create Command", () => {
       predicate: CREATE_PREDICATE,
       args: [],
     } as Command);
-    await discordClient.destroy();
     expect(res).toBe(false);
   });
 });
@@ -94,7 +93,6 @@ describe("Create Command", () => {
       args: ["group"],
     } as Command);
 
-    await discordClient.destroy();
     expect(res).toBe(true);
   });
 });
