@@ -88,3 +88,41 @@ describe("UserList", () => {
     ).toBe(false);
   });
 });
+
+describe("UserList", () => {
+  it("can be checked for if a user is in it", () => {
+    const userList = new UserList();
+    userList.AddToUsingCommandList({
+      username: "Test",
+      discriminator: "1234",
+      commandPredicate: "help",
+    } as UsingCommandList);
+
+    userList.AddToUsingCommandList({
+      username: "New Test 2",
+      discriminator: "4321",
+      commandPredicate: "create",
+    } as UsingCommandList);
+
+    expect(
+      userList.UserInUserList({
+        username: "Test",
+        discriminator: "1234",
+      } as UsingCommandList)
+    ).toBe(true);
+
+    expect(
+      userList.UserInUserList({
+        username: "New Test 2",
+        discriminator: "4321",
+      } as UsingCommandList)
+    ).toBe(true);
+
+    expect(
+      userList.UserInUserList({
+        username: "Failing Test",
+        discriminator: "4321",
+      } as UsingCommandList)
+    ).toBe(false);
+  });
+});

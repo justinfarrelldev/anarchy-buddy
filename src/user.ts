@@ -1,10 +1,13 @@
 import { COMMAND_LIST } from "./commands/index";
 
-export interface UsingCommandList {
+export interface UserInfo {
   username: string;
   discriminator: string;
-  commandPredicate: string;
 }
+
+export type UsingCommandList = UserInfo & {
+  commandPredicate: string;
+};
 
 export class UserList {
   usingCommandList: UsingCommandList[] = [];
@@ -27,6 +30,13 @@ export class UserList {
         usingCommand.username === entryToCheck.username &&
         usingCommand.discriminator === entryToCheck.discriminator &&
         usingCommand.commandPredicate === entryToCheck.commandPredicate
+    );
+  };
+  public UserInUserList = (userInfo: UserInfo) => {
+    return this.usingCommandList.some(
+      (usingCommand) =>
+        usingCommand.username === userInfo.username &&
+        usingCommand.discriminator === userInfo.discriminator
     );
   };
 }

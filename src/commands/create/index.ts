@@ -11,7 +11,7 @@ import {
   ERRORS,
   unknownCommandError,
 } from "../../constants";
-import { docClient } from "../../index";
+import { docClient, userList } from "../../index";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Group } from "./group";
 const stringToColor = require("string-to-color");
@@ -51,17 +51,27 @@ const takeInput = async (
   waitTimeInMillis: number,
   onFulfilled: (input: Collection<string, Message>) => void | PromiseLike<void>
 ): Promise<{ timeout: boolean; group?: Group }> => {
-  msg.channel.send(messageToDisplay);
-  await msg.channel
-    .awaitMessages((m) => m.author.id == msg.author.id, {
-      max: 1,
-      time: waitTimeInMillis,
-    })
-    .then((collected) => {
-      // TODO logic for the user list goes here, need to rewrite it
-      onFulfilled(collected);
-    })
-    .catch((err) => console.error(err));
+  let fulfilled = false;
+  while (!fulfilled) {
+    msg.channel.send(messageToDisplay);
+    await msg.channel
+      .awaitMessages((m) => m.author.id == msg.author.id, {
+        max: 1,
+        time: waitTimeInMillis,
+      })
+      .then((collected) => {
+        if (
+          !userList.UserInUserList({
+            username: msg.author.username,
+            discriminator: msg.author.discriminator,
+          })
+        ) {
+          fulfilled = true;
+          onFulfilled(collected);
+        }
+      })
+      .catch((err) => console.error(err));
+  }
 
   return { timeout: false, group };
 };
