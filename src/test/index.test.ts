@@ -1,16 +1,4 @@
-import {
-  Client,
-  Message as DiscordMessage,
-  TextChannel,
-  Guild,
-} from "discord.js";
-import { COMMAND_LIST, ResolveCommand } from "../commands/index";
-import { BOT_COMMAND_NAME } from "../constants";
-
-const Discord = require("discord.js");
 require("dotenv").config();
-
-let discordClient = new Discord.Client();
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -25,7 +13,7 @@ describe("Environment variables", () => {
 });
 
 /* 
-
+ 
     let member = new Discord.GuildMember(
       discordClient,
       { id: Discord.SnowflakeUtil.generate(), user: { id: user.id } },
