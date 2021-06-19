@@ -14,6 +14,7 @@ import {
 import { docClient, userList } from "../../index";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Group } from "./group";
+import { CleanUpAfterCommand, InitializeCommand } from "..";
 const stringToColor = require("string-to-color");
 
 export const CREATE_PREDICATE = "create";
@@ -91,21 +92,20 @@ const makePublicGroup = async (
   let members = [];
   let timeout = false;
   if (!groupName) {
-    msg.channel.send("Please specify the name for the group.");
     group.owner = `${msg.author.username}#${msg.author.discriminator}`;
-    await msg.channel
-      .awaitMessages((m) => m.author.id == msg.author.id, {
-        max: 1,
-        time: BOT_COMMAND_WAIT_TIME_MS,
-      })
-      .then((collected) => {
+    takeInput(
+      msg,
+      "Please specify the name for the group.",
+      group,
+      BOT_COMMAND_WAIT_TIME_MS,
+      (collected) => {
         if (!collected.first()) {
           timeout = true;
           return;
         }
         group.name = collected.first().content;
-      })
-      .catch((err) => console.error(err));
+      }
+    );
   }
 
   if (timeout) {
@@ -333,17 +333,6 @@ const makeGroup = async (msg: Message, groupName?: string) => {
     }
   );
 
-  // msg.channel.send(
-  //   "Will this group be private? (Will DM you asking the details there for some privacy 😉) [yes/no]"
-  // );
-  // await msg.channel
-  //   .awaitMessages((m) => m.author.id == msg.author.id, {
-  //     max: 1,
-  //     time: BOT_COMMAND_WAIT_TIME_MS,
-  //   })
-  //   .then()
-  //   .catch((err) => console.error(err));
-
   if (!group.privateGroup) {
     makePublicGroup(msg, group, groupName);
   } else {
@@ -359,7 +348,11 @@ export const Create = async (msg: Message, command: Command) => {
 
   switch (command.args[0].toLowerCase()) {
     case "group":
+      InitializeCommand(msg, CREATE_PREDICATE);
       makeGroup(msg, command.args.length > 1 ? command.args[1] : undefined);
+      return true;
   }
-  return true;
+
+  CleanUpAfterCommand(msg, CREATE_PREDICATE);
+  return false;
 };

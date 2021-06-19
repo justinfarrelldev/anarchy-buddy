@@ -17,11 +17,11 @@ export class UserList {
    */
 
   public AddToUsingCommandList = (newEntry: UsingCommandList) =>
-    this.usingCommandList.push(newEntry);
+    this.usingCommandList.push(newEntry as UsingCommandList);
 
   public RemoveFromUsingCommandList = (entryToRemove: UsingCommandList) =>
     (this.usingCommandList = this.usingCommandList.splice(
-      this.usingCommandList.indexOf(entryToRemove),
+      this.usingCommandList.indexOf(entryToRemove as UsingCommandList),
       1
     ));
   public IncludedInUserList = (entryToCheck: UsingCommandList) => {

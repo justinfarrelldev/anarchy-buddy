@@ -6,6 +6,7 @@ import { Command } from "../../command";
 import { Message } from "discord.js";
 import { docClient } from "../..";
 import { BOT_TEAM_DATABASE_NAME, unknownCommandError } from "../../constants";
+import { CleanUpAfterCommand, InitializeCommand } from "..";
 const discord = require("discord.js");
 
 export const LIST_PREDICATE = "list";
@@ -47,8 +48,10 @@ const listPublicGroups = (msg: Message) => {
     )
     .catch((err) => {
       console.error(err);
+      CleanUpAfterCommand(msg, LIST_PREDICATE);
       return false;
     });
+  CleanUpAfterCommand(msg, LIST_PREDICATE);
   return true;
 };
 
@@ -60,9 +63,11 @@ export const List = (msg: Message, command: Command) => {
 
   switch (command.args[0].toLowerCase()) {
     case "group":
+      InitializeCommand(msg, LIST_PREDICATE);
       listPublicGroups(msg);
       return true;
     case "groups":
+      InitializeCommand(msg, LIST_PREDICATE);
       listPublicGroups(msg);
       return true;
   }

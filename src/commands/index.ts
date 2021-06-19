@@ -34,7 +34,6 @@ export const ResolveCommand = async (msg: Message) => {
     msg.channel.send(`${ERRORS.COMMAND_IN_PROGRESS}`);
     return;
   }
-  InitializeCommand(msg, messageTokens[1]);
   switch (messageTokens[1]) {
     case HELP_PREDICATE:
       return Help(msg, command);
@@ -51,6 +50,18 @@ export const ResolveCommand = async (msg: Message) => {
 
 export const InitializeCommand = (msg: Message, predicate: string) => {
   userList.AddToUsingCommandList({
+    username: msg.author.username,
+    discriminator: msg.author.discriminator,
+    commandPredicate: predicate,
+  });
+};
+
+/*
+ * Cleans up after a command has run. Should run once a command goes through its full cycle.
+ */
+
+export const CleanUpAfterCommand = (msg: Message, predicate: string) => {
+  userList.RemoveFromUsingCommandList({
     username: msg.author.username,
     discriminator: msg.author.discriminator,
     commandPredicate: predicate,

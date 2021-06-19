@@ -4,7 +4,7 @@
 
 import { Command } from "../../command";
 import { Message, EmbedFieldData } from "discord.js";
-import { COMMAND_LIST } from "..";
+import { CleanUpAfterCommand, COMMAND_LIST, InitializeCommand } from "..";
 import { HELP_EMBED } from "../../constants";
 import { userList } from "../..";
 
@@ -18,6 +18,7 @@ const GetDefaultCommands = (msg: Message) => {
   msg.channel.send(
     HELP_EMBED.addFields(
       Object.values(COMMAND_LIST).map((value, idx) => {
+        CleanUpAfterCommand(msg, HELP_PREDICATE);
         return {
           name: Object.keys(COMMAND_LIST)[idx],
           value: value,
@@ -26,11 +27,14 @@ const GetDefaultCommands = (msg: Message) => {
     )
   );
   HELP_EMBED.fields = [];
+  CleanUpAfterCommand(msg, HELP_PREDICATE);
 };
 
 export const Help = (msg: Message, command: Command) => {
+  InitializeCommand(msg, HELP_PREDICATE);
   if (command.args.length === 0) {
     GetDefaultCommands(msg);
+    CleanUpAfterCommand(msg, HELP_PREDICATE);
     return true;
   }
 
@@ -45,5 +49,6 @@ export const Help = (msg: Message, command: Command) => {
       HELP_EMBED.fields = [];
     }
   }
-  return true;
+  CleanUpAfterCommand(msg, HELP_PREDICATE);
+  return false;
 };
