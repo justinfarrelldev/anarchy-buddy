@@ -13,7 +13,7 @@
     "start": "node ./index.js",
     "start-dev": "node ./build/index.js",
     "coverage": "jest --coverage",
-    "new-command": "mkdir -p src/commands/$npm_config_name && cp presets/commands/command.txt src/commands/$npm_config_name/$npm_config_name.ts"  
+    "new-command": "mkdir -p src/commands/$npm_config_name && cp presets/commands/command.txt src/commands/$npm_config_name/$npm_config_name.ts && cp presets/commands/command.test.txt src/commands/$npm_config_name/$npm_config_name.test.ts"  
   },
   "keywords": [],
   "author": "",
