@@ -1,5 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Collection, Message, User } from "discord.js";
+import { GetMemberListFromGroup } from "..";
 import { docClient } from "../..";
 import { Command } from "../../command";
 import {
@@ -22,20 +23,11 @@ const attemptRemove = async (
     ProjectionExpression: "info.members",
   };
 
-  const membersList = await docClient
-    .scan(params, (error) => {
-      if (error) {
-        return console.error(`${ERRORS.DB_UPDATE_ERROR}: ${error}`);
-      }
-    })
-    .promise()
-    .then((result) => {
-      return result.Items.map((item) => item["info"]["members"]);
-    });
+  const membersList = await GetMemberListFromGroup(params);
 
   // ! Do not change the order in which these are listed, as this is important for handling the deletion of the right member.
 
-  const indicesToDelete = membersList[0]
+  const indicesToDelete = membersList
     .map((member, idx) => {
       let contained = false;
       users.forEach((user) => {

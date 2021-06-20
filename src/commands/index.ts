@@ -1,7 +1,8 @@
 // Module map to show predicates and execute them if they are encountered
 
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Message } from "discord.js";
-import { userList } from "..";
+import { docClient, userList } from "..";
 import { ERRORS } from "../constants";
 import { Add, ADD_DESCRIPTION, ADD_PREDICATE } from "./add";
 import { Create, CREATE_DESCRIPTION, CREATE_PREDICATE } from "./create";
@@ -77,4 +78,19 @@ export const CleanUpAfterCommand = (msg: Message, predicate: string) => {
     discriminator: msg.author.discriminator,
     commandPredicate: predicate,
   });
+};
+
+export const GetMemberListFromGroup = async (
+  params: DocumentClient.ScanInput
+) => {
+  return await docClient
+    .scan(params, (error) => {
+      if (error) {
+        return console.error(`${ERRORS.DB_UPDATE_ERROR}: ${error}`);
+      }
+    })
+    .promise()
+    .then((result) => {
+      return result.Items.map((item) => item["info"]["members"])[0];
+    });
 };
