@@ -7,6 +7,7 @@ import { Add, ADD_DESCRIPTION, ADD_PREDICATE } from "./add";
 import { Create, CREATE_DESCRIPTION, CREATE_PREDICATE } from "./create";
 import { Help, HELP_DESCRIPTION, HELP_PREDICATE } from "./help";
 import { List, LIST_DESCRIPTION, LIST_PREDICATE } from "./list";
+import { Remove, REMOVE_DESCRIPTION, REMOVE_PREDICATE } from "./remove";
 
 // ANCHOR[id=command_list_anchor] The command list
 export const COMMAND_LIST = {
@@ -14,6 +15,7 @@ export const COMMAND_LIST = {
   [CREATE_PREDICATE]: CREATE_DESCRIPTION,
   [LIST_PREDICATE]: LIST_DESCRIPTION,
   [ADD_PREDICATE]: ADD_DESCRIPTION,
+  [REMOVE_PREDICATE]: REMOVE_DESCRIPTION,
 };
 
 /*
@@ -48,6 +50,8 @@ export const ResolveCommand = async (msg: Message) => {
       return List(msg, command);
     case ADD_PREDICATE:
       return Add(msg, command);
+    case REMOVE_PREDICATE:
+      return Remove(msg, command);
   }
 };
 
