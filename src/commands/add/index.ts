@@ -6,6 +6,7 @@ import { Command } from "../../command";
 import {
   BOT_TEAM_DATABASE_NAME,
   ERRORS,
+  LogUserError,
   unknownCommandError,
 } from "../../constants";
 
@@ -28,6 +29,33 @@ const attemptUpdate = async (
   };
 
   const currentMembers = await GetMemberListFromGroup(params);
+
+  let contained = [];
+  users.forEach((user, idx) => {
+    currentMembers.forEach((current) => {
+      if (`${user.username}#${user.discriminator}` == current) {
+        contained.push(idx);
+      }
+    });
+  });
+
+  if (contained.length > 0) {
+    LogUserError(msg, ERRORS.USER_ALREADY_ADDED);
+    msg.channel.send(
+      `${ERRORS.USER_ALREADY_ADDED} ${users
+        .filter((_user, idx) => contained.includes(idx))
+        .map((user) => user.username)
+        .join(", ")}. They will not be added to the group again.`
+    );
+    users = users.filter((_user, idx) => {
+      return !contained.includes(idx);
+    });
+  }
+
+  if (users.array().length == 0) {
+    msg.channel.send(`No users to add.`);
+    return;
+  }
 
   const paramsUpdate: DocumentClient.UpdateItemInput = {
     TableName: BOT_TEAM_DATABASE_NAME,
