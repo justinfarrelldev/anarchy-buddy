@@ -3,6 +3,7 @@
 import { Message } from "discord.js";
 import { userList } from "..";
 import { ERRORS } from "../constants";
+import { Add, ADD_DESCRIPTION, ADD_PREDICATE } from "./add";
 import { Create, CREATE_DESCRIPTION, CREATE_PREDICATE } from "./create";
 import { Help, HELP_DESCRIPTION, HELP_PREDICATE } from "./help";
 import { List, LIST_DESCRIPTION, LIST_PREDICATE } from "./list";
@@ -12,6 +13,7 @@ export const COMMAND_LIST = {
   [HELP_PREDICATE]: HELP_DESCRIPTION,
   [CREATE_PREDICATE]: CREATE_DESCRIPTION,
   [LIST_PREDICATE]: LIST_DESCRIPTION,
+  [ADD_PREDICATE]: ADD_DESCRIPTION,
 };
 
 /*
@@ -35,6 +37,8 @@ export const ResolveCommand = async (msg: Message) => {
     msg.channel.send(`${ERRORS.COMMAND_IN_PROGRESS}`);
     return;
   }
+
+  // ANCHOR[id=command_switch_anchor] The command switch statement
   switch (messageTokens[1]) {
     case HELP_PREDICATE:
       return Help(msg, command);
@@ -42,6 +46,8 @@ export const ResolveCommand = async (msg: Message) => {
       return await Create(msg, command);
     case LIST_PREDICATE:
       return List(msg, command);
+    case ADD_PREDICATE:
+      return Add(msg, command);
   }
 };
 

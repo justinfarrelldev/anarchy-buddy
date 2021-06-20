@@ -1,9 +1,17 @@
 import { Message } from "discord.js";
 import { Command } from "../../command";
 
+// !Configure these, replacing "MODULE_NAME" and "module_name with the module name in these variables.
+export const MODULE_NAME_PREDICATE = "module_name";
+export const MODULE_NAME_DESCRIPTION = `What does this module do?`;
+export const MODULE_NAME_USAGE = "module_name [argumentsForCommand]";
+
 /*
-    ! You may want to add the module to the command list below 
+    ! Add the module to the command list below 
     LINK src/commands/index.ts#command_list_anchor
+
+    ! Also add the predicate and relevant function to the switch statement below 
+    LINK src/commands/index.ts#command_switch_anchor
 */
 
 export const ModuleNameGoesHere = (msg: Message, command: Command): boolean => { 
