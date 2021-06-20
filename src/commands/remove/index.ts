@@ -33,8 +33,6 @@ const attemptRemove = async (
       return result.Items.map((item) => item["info"]["members"]);
     });
 
-  console.log("Members list: ", membersList[0]);
-
   // ! Do not change the order in which these are listed, as this is important for handling the deletion of the right member.
 
   const indicesToDelete = membersList[0]
@@ -49,7 +47,29 @@ const attemptRemove = async (
     })
     .filter((idx) => idx != undefined);
 
-  console.log("Would delete: ", indicesToDelete);
+  const stringUpdate = indicesToDelete
+    .map((idx) => `info.members[${idx}]`)
+    .join(", ");
+
+  const paramsUpdate: DocumentClient.UpdateItemInput = {
+    TableName: BOT_TEAM_DATABASE_NAME,
+    Key: {
+      id: `${groupName}-${msg.guild.id}`,
+    },
+    UpdateExpression: `REMOVE ${stringUpdate}`,
+  };
+
+  docClient.update(paramsUpdate, (error) => {
+    if (!error) {
+      return msg.channel.send(
+        `Removed ${users
+          .map((user) => user.username)
+          .join(", ")} from the group ${groupName}.`
+      );
+    } else {
+      return console.error(`${ERRORS.DB_UPDATE_ERROR}: ${error}`);
+    }
+  });
 };
 
 export const Remove = (msg: Message, command: Command): boolean => {
