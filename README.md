@@ -16,6 +16,8 @@ The bot can be started locally by running "npm run build-dev-watch" from the com
 
 Please use pull requests and the typical Github workflow while contributing.
 
+You can make a new command by running "npm run new-command --name=(your command name goes here)". This will autogenerate a file under src/commands within the correct folder with some boilerplate.
+
 ## Can I fork this and modify it for my server/Realm?
 
 Absolutely! As you can see from the .code-workspace file, I use VSCode personally to interact with the project. I have a list of recommended extensions below!
