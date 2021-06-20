@@ -21,6 +21,10 @@ const attemptRemove = async (
   const params: DocumentClient.ScanInput = {
     TableName: BOT_TEAM_DATABASE_NAME,
     ProjectionExpression: "info.members",
+    FilterExpression: `contains(id,:idValue)`,
+    ExpressionAttributeValues: {
+      ":idValue": `${groupName}-${msg.guild.id}`,
+    },
   };
 
   const membersList = await GetMemberListFromGroup(params);

@@ -1,5 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Collection, Message, User } from "discord.js";
+import { GetMemberListFromGroup } from "..";
 import { docClient } from "../..";
 import { Command } from "../../command";
 import {
@@ -12,12 +13,23 @@ export const ADD_PREDICATE = "add";
 export const ADD_DESCRIPTION = `Add a person to something.`;
 export const ADD_USAGE = "add [...@user] [group name]";
 
-const attemptUpdate = (
+const attemptUpdate = async (
   msg: Message,
   users: Collection<string, User>,
   groupName: string
 ) => {
-  const params: DocumentClient.UpdateItemInput = {
+  const params: DocumentClient.ScanInput = {
+    TableName: BOT_TEAM_DATABASE_NAME,
+    ProjectionExpression: "info.members",
+    FilterExpression: `contains(id,:idValue)`,
+    ExpressionAttributeValues: {
+      ":idValue": `${groupName}-${msg.guild.id}`,
+    },
+  };
+
+  const currentMembers = await GetMemberListFromGroup(params);
+
+  const paramsUpdate: DocumentClient.UpdateItemInput = {
     TableName: BOT_TEAM_DATABASE_NAME,
     Key: {
       id: `${groupName}-${msg.guild.id}`,
@@ -31,7 +43,7 @@ const attemptUpdate = (
     },
   };
 
-  docClient.update(params, (error) => {
+  docClient.update(paramsUpdate, (error) => {
     if (!error) {
       return msg.channel.send(
         `Added ${users
