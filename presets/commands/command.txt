@@ -6,7 +6,7 @@ import { Command } from "../../command";
     LINK src/commands/index.ts#command_list_anchor
 */
 
-export const #module_name = (msg: Message, command: Command): boolean => { 
+export const ModuleNameGoesHere = (msg: Message, command: Command): boolean => { 
   // Command logic goes here
   return true; // True if the command passed, if it failed then false
 };
