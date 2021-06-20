@@ -2,20 +2,22 @@ import { EmbedFieldData, Message } from "discord.js";
 import discord = require("discord.js");
 // The name to use for accessing the bot commands.
 export const BOT_COMMAND_NAME = "ab";
-export const BOT_TEAM_DATABASE_NAME = "anarchy-buddy-teams";
+export const BOT_TEAM_DATABASE_NAME = "anarchy-buddy-groups";
 export const BOT_COMMAND_WAIT_TIME_MS = 60000; // 1 min
 export const BOT_COMMAND_WAIT_TIME_MS_PRIVATE = 300000; // 5 mins
 
 interface ERRORS_INTERFACE {
   INVALID_COMMAND: string;
-  DB_ERROR: string;
+  DB_PUT_ERROR: string;
+  DB_UPDATE_ERROR: string;
   GROUP_CREATION_TIMEOUT: string;
   COMMAND_IN_PROGRESS: string;
 }
 
 export const ERRORS: ERRORS_INTERFACE = {
   INVALID_COMMAND: "Invalid command.",
-  DB_ERROR: "A database error occurred.",
+  DB_PUT_ERROR: "A database put error occurred.",
+  DB_UPDATE_ERROR: "A database update error occurred.",
   GROUP_CREATION_TIMEOUT: "Timed out. Group info discarded.",
   COMMAND_IN_PROGRESS: "A command is already in progress.",
 };

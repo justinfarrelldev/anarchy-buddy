@@ -30,7 +30,7 @@ const uploadGroup = async (
   const params: DocumentClient.PutItemInput = {
     TableName: BOT_TEAM_DATABASE_NAME,
     Item: {
-      id: Date.now(),
+      id: `${groupToUpload.name}-${msg.guild.id}`,
       info: groupToUpload,
     },
   };
@@ -41,7 +41,7 @@ const uploadGroup = async (
         ? msg.channel.send(`Successfully created ${groupToUpload.name}.`)
         : msg.author.send(`Successfully created ${groupToUpload.name}.`);
     } else {
-      return console.error(`${ERRORS.DB_ERROR}: ${error}`);
+      return console.error(`${ERRORS.DB_PUT_ERROR}: ${error}`);
     }
   });
 };
