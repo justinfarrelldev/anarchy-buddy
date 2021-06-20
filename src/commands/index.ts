@@ -7,6 +7,7 @@ import { Create, CREATE_DESCRIPTION, CREATE_PREDICATE } from "./create";
 import { Help, HELP_DESCRIPTION, HELP_PREDICATE } from "./help";
 import { List, LIST_DESCRIPTION, LIST_PREDICATE } from "./list";
 
+// ANCHOR[id=command_list_anchor] The command list
 export const COMMAND_LIST = {
   [HELP_PREDICATE]: HELP_DESCRIPTION,
   [CREATE_PREDICATE]: CREATE_DESCRIPTION,
