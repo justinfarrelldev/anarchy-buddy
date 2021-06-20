@@ -92,5 +92,10 @@ export const GetMemberListFromGroup = async (
     .promise()
     .then((result) => {
       return result.Items.map((item) => item["info"]["members"])[0];
-    });
+    })
+    .catch((err) =>
+      console.error(
+        `An error occurred while getting a member list from a group: ${err}`
+      )
+    );
 };
