@@ -101,6 +101,14 @@ export const Remove = (msg: Message, command: Command): boolean => {
     return false;
   }
 
+  if (
+    command.args[command.args.length - 1].startsWith("<@") &&
+    command.args[command.args.length - 1].endsWith(">")
+  ) {
+    LogUserError(msg, "LAST_ARGUMENT_NOT_TABLE_NAME");
+    msg.channel.send(`${ERRORS.LAST_ARGUMENT_NOT_TABLE_NAME}`);
+    return;
+  }
   attemptRemove(msg, msg.mentions.users, command.args[command.args.length - 1]);
 
   // Command logic goes here
