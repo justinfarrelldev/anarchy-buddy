@@ -21,6 +21,33 @@ export const CREATE_PREDICATE = "create";
 export const CREATE_DESCRIPTION = `Can be used to create groups. Example: "ab create 'group name'"`;
 export const CREATE_USAGE = "create [group]";
 
+const createPrivateChannels = (msg: Message, groupToUpload: Group) => {
+  msg.guild.channels
+    .create(`${groupToUpload.name}`, {
+      reason: "Automatically created by Anarchy Buddy during group creation.",
+      type: "category",
+    })
+    .then((cat) => {
+      msg.guild.channels
+        .create(`${groupToUpload.name.replace(/ /g, "-")}`, {
+          reason:
+            "Automatically created by Anarchy Buddy during group creation.",
+          type: "text",
+          parent: cat,
+        })
+        .catch(console.error);
+      msg.guild.channels
+        .create(`${groupToUpload.name.replace(/ /g, "-")}-voice`, {
+          reason:
+            "Automatically created by Anarchy Buddy during group creation.",
+          type: "voice",
+          parent: cat,
+        })
+        .catch(console.error);
+    })
+    .catch(console.error);
+};
+
 const uploadGroup = async (
   msg: Message,
   groupToUpload: Group,
@@ -109,6 +136,7 @@ const makePublicGroup = async (
 ) => {
   let members = [];
   let timeout = false;
+  let newChannels = false;
   if (!groupName) {
     group.owner = `${msg.author.username}#${msg.author.discriminator}`;
     await takeInput(
@@ -149,6 +177,28 @@ const makePublicGroup = async (
     msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
     return;
   }
+
+  await takeInput(
+    msg,
+    `Would you like to add private chats for ${group.name}? (yes or no)`,
+    group,
+    BOT_COMMAND_WAIT_TIME_MS,
+    (collected) => {
+      if (!collected.first()) {
+        timeout = true;
+        return;
+      }
+
+      newChannels =
+        collected.first().content.toLowerCase() == "yes" ? true : false;
+    }
+  );
+
+  if (timeout) {
+    msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
+    return;
+  }
+
   while (members.length == 0 && !timeout) {
     if (timeout) return;
 
@@ -201,6 +251,9 @@ const makePublicGroup = async (
     msg.channel.send(ERRORS.GROUP_CREATION_TIMEOUT);
     return;
   }
+
+  if (newChannels) createPrivateChannels(msg, group);
+
   uploadGroup(msg, group, false);
 };
 
