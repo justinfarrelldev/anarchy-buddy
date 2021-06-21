@@ -99,3 +99,10 @@ export const GetMemberListFromGroup = async (
       )
     );
 };
+
+export const TokenIsMention = (token: string): boolean => {
+  if (token.startsWith("<@") && token.endsWith(">")) {
+    return true;
+  }
+  return false;
+};

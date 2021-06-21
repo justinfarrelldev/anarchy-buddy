@@ -1,6 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Collection, Message, User } from "discord.js";
-import { GetMemberListFromGroup } from "..";
+import { GetMemberListFromGroup, TokenIsMention } from "..";
 import { docClient } from "../..";
 import { Command } from "../../command";
 import {
@@ -90,6 +90,11 @@ export const Add = (msg: Message, command: Command): boolean => {
     return false;
   }
 
+  if (TokenIsMention(command.args[command.args.length - 1])) {
+    LogUserError(msg, "LAST_ARGUMENT_NOT_TABLE_NAME");
+    msg.channel.send(`${ERRORS.LAST_ARGUMENT_NOT_TABLE_NAME}`);
+    return;
+  }
   attemptUpdate(msg, msg.mentions.users, command.args[command.args.length - 1]);
 
   return true; // True if the command passed, if it failed then false
