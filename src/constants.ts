@@ -12,7 +12,8 @@ interface ERRORS_INTERFACE {
   DB_UPDATE_ERROR: string;
   GROUP_CREATION_TIMEOUT: string;
   COMMAND_IN_PROGRESS: string;
-  USER_ALREADY_ADDED;
+  USER_ALREADY_ADDED: string;
+  USER_NOT_IN_GROUP: string;
 }
 
 export const ERRORS: ERRORS_INTERFACE = {
@@ -22,6 +23,8 @@ export const ERRORS: ERRORS_INTERFACE = {
   GROUP_CREATION_TIMEOUT: "Timed out. Group info discarded.",
   COMMAND_IN_PROGRESS: "A command is already in progress.",
   USER_ALREADY_ADDED: "A user was already added to the group: ", // ? Meant to be used in conjunction with outputting the user name
+  USER_NOT_IN_GROUP:
+    "A user is not part of the group and thus cannot be removed: ",
 };
 
 export const LogUserError = (msg: Message, err: keyof ERRORS_INTERFACE) => {

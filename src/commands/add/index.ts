@@ -40,7 +40,7 @@ const attemptUpdate = async (
   });
 
   if (contained.length > 0) {
-    LogUserError(msg, ERRORS.USER_ALREADY_ADDED);
+    LogUserError(msg, "USER_ALREADY_ADDED");
     msg.channel.send(
       `${ERRORS.USER_ALREADY_ADDED} ${users
         .filter((_user, idx) => contained.includes(idx))

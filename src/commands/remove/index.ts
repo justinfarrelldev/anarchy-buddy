@@ -6,6 +6,7 @@ import { Command } from "../../command";
 import {
   BOT_TEAM_DATABASE_NAME,
   ERRORS,
+  LogUserError,
   unknownCommandError,
 } from "../../constants";
 
@@ -28,6 +29,32 @@ const attemptRemove = async (
   };
 
   const membersList = await GetMemberListFromGroup(params);
+
+  let nonContained = [];
+  users = users.filter((user) => {
+    let contained = false;
+    membersList.forEach((member) => {
+      if (`${user.username}#${user.discriminator}` == member) {
+        contained = true;
+      }
+    });
+    if (!contained) nonContained.push(user);
+    return contained;
+  });
+
+  if (nonContained.length > 0) {
+    LogUserError(msg, "USER_ALREADY_ADDED");
+    msg.channel.send(
+      `${ERRORS.USER_NOT_IN_GROUP} ${nonContained
+        .map((user) => user.username)
+        .join(", ")}.`
+    );
+  }
+
+  if (users.array().length == 0) {
+    msg.channel.send("No remaining users to remove.");
+    return;
+  }
 
   // ! Do not change the order in which these are listed, as this is important for handling the deletion of the right member.
 
