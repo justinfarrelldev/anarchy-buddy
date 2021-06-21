@@ -80,6 +80,9 @@ export const CleanUpAfterCommand = (msg: Message, predicate: string) => {
   });
 };
 
+export const GenerateChannelNameForGroup = (groupName: string): string =>
+  `${groupName.replace(/ /g, "-")}`;
+
 export const GetMemberListFromGroup = async (
   params: DocumentClient.ScanInput
 ) => {

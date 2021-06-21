@@ -3,7 +3,7 @@
  */
 
 import { Command, IsCommand } from "../../command";
-import { Collection, Message } from "discord.js";
+import { Collection, Message, Role } from "discord.js";
 import {
   BOT_COMMAND_WAIT_TIME_MS,
   BOT_COMMAND_WAIT_TIME_MS_PRIVATE,
@@ -14,14 +14,37 @@ import {
 import { docClient, userList } from "../../index";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Group } from "./group";
-import { CleanUpAfterCommand, InitializeCommand } from "..";
+import {
+  CleanUpAfterCommand,
+  GenerateChannelNameForGroup,
+  InitializeCommand,
+} from "..";
 const stringToColor = require("string-to-color");
 
 export const CREATE_PREDICATE = "create";
 export const CREATE_DESCRIPTION = `Can be used to create groups. Example: "ab create 'group name'"`;
 export const CREATE_USAGE = "create [group]";
 
-const createPrivateChannels = (msg: Message, groupToUpload: Group) => {
+const createPrivateChannels = async (msg: Message, groupToUpload: Group) => {
+  let roleCreated: Role;
+  await msg.guild.roles
+    .create({
+      data: {
+        name: groupToUpload.name,
+        color: groupToUpload.color,
+      },
+      reason: "Automatically created by Anarchy Buddy during group creation.",
+    })
+    .then((role) => {
+      roleCreated = role;
+    })
+    .catch(console.error);
+
+  groupToUpload.guildMembers.forEach((member) => {
+    let memberNew = msg.guild.member(member);
+    memberNew.roles.add(roleCreated);
+  });
+
   msg.guild.channels
     .create(`${groupToUpload.name}`, {
       reason: "Automatically created by Anarchy Buddy during group creation.",
@@ -29,7 +52,7 @@ const createPrivateChannels = (msg: Message, groupToUpload: Group) => {
     })
     .then((cat) => {
       msg.guild.channels
-        .create(`${groupToUpload.name.replace(/ /g, "-")}`, {
+        .create(GenerateChannelNameForGroup(groupToUpload.name), {
           reason:
             "Automatically created by Anarchy Buddy during group creation.",
           type: "text",
@@ -37,7 +60,7 @@ const createPrivateChannels = (msg: Message, groupToUpload: Group) => {
         })
         .catch(console.error);
       msg.guild.channels
-        .create(`${groupToUpload.name.replace(/ /g, "-")}-voice`, {
+        .create(`${GenerateChannelNameForGroup(groupToUpload.name)}-Voice`, {
           reason:
             "Automatically created by Anarchy Buddy during group creation.",
           type: "voice",
@@ -215,10 +238,8 @@ const makePublicGroup = async (
 
         collected
           .first()
-          .mentions.users.forEach((member) =>
-            members.push(`${member.username}#${member.discriminator}`)
-          );
-        group.members = members;
+          .mentions.users.forEach((member) => members.push(member));
+        group.guildMembers = members;
       }
     );
   }
@@ -331,11 +352,9 @@ const makePrivateGroup = async (
 
         collected
           .first()
-          .mentions.users.forEach((member) =>
-            members.push(`${member.username}#${member.discriminator}`)
-          );
+          .mentions.users.forEach((member) => members.push(member));
 
-        group.members = members;
+        group.guildMembers = members;
         msg.channel.lastMessage.delete({
           reason: "Getting rid of a member list for a private group.",
         });
@@ -381,7 +400,7 @@ const makePrivateGroup = async (
 const makeGroup = async (msg: Message, groupName?: string) => {
   const group: Group = {
     description: "",
-    members: [],
+    guildMembers: [],
     color: "",
     owner: "",
     privateGroup: false,
