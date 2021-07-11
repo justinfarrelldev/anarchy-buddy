@@ -11,7 +11,7 @@ import {
   ERRORS,
   unknownCommandError,
 } from "../../constants";
-import { docClient, userList } from "../../index";
+import discordClient, { docClient, userList } from "../../index";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Group } from "./group";
 import {
@@ -51,12 +51,27 @@ const createPrivateChannels = async (msg: Message, groupToUpload: Group) => {
       type: "category",
     })
     .then((cat) => {
+      cat.overwritePermissions([
+        { id: msg.guild.roles.everyone.id, deny: ["VIEW_CHANNEL"] },
+      ]); // Deny viewing for @everyone
+      cat.overwritePermissions([
+        { id: discordClient.user.id, allow: ["VIEW_CHANNEL"] },
+      ]); // Allow the bot to view the channel
+      //groupToUpload.guildMembers.forEach((member) => {
+      cat.overwritePermissions([
+        { id: roleCreated.id, allow: ["VIEW_CHANNEL"] },
+      ]); // Allow viewing for those in the group
+      //});
       msg.guild.channels
         .create(GenerateChannelNameForGroup(groupToUpload.name), {
           reason:
             "Automatically created by Anarchy Buddy during group creation.",
           type: "text",
           parent: cat,
+          permissionOverwrites: [
+            { id: msg.guild.roles.everyone.id, deny: ["VIEW_CHANNEL"] },
+            { id: roleCreated.id, allow: ["VIEW_CHANNEL"] },
+          ],
         })
         .catch(console.error);
       msg.guild.channels
@@ -65,6 +80,10 @@ const createPrivateChannels = async (msg: Message, groupToUpload: Group) => {
             "Automatically created by Anarchy Buddy during group creation.",
           type: "voice",
           parent: cat,
+          permissionOverwrites: [
+            { id: msg.guild.roles.everyone.id, deny: ["VIEW_CHANNEL"] },
+            { id: roleCreated.id, allow: ["VIEW_CHANNEL"] },
+          ],
         })
         .catch(console.error);
     })
