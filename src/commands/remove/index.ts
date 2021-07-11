@@ -21,7 +21,7 @@ const attemptRemove = async (
 ) => {
   const params: DocumentClient.ScanInput = {
     TableName: BOT_TEAM_DATABASE_NAME,
-    ProjectionExpression: "info.members",
+    ProjectionExpression: "info.guildMembers",
     FilterExpression: `contains(id,:idValue)`,
     ExpressionAttributeValues: {
       ":idValue": `${groupName}-${msg.guild.id}`,
@@ -106,7 +106,9 @@ export const Remove = (msg: Message, command: Command): boolean => {
     msg.channel.send(`${ERRORS.LAST_ARGUMENT_NOT_TABLE_NAME}`);
     return;
   }
-  attemptRemove(msg, msg.mentions.users, command.args[command.args.length - 1]);
+
+  const [_drop, ...args] = command.args;
+  attemptRemove(msg, msg.mentions.users, args.join(" "));
 
   // Command logic goes here
   return true; // True if the command passed, if it failed then false
