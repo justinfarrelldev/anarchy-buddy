@@ -28,9 +28,15 @@ const attemptRemove = async (
     },
   };
 
-  console.log("TRYING TO GET INFO ");
   const info = await GetInfoFromGroup(params);
   console.log("INFO: ", info);
+  if (info === undefined) {
+    console.error(
+      `The group that was attempted removal on doesn't exist (group name: ${groupName}, attempted removal by ${msg.author.username}#${msg.author.discriminator})`
+    );
+    msg.channel.send("Group not found (case-sensitive).");
+    return;
+  }
   const membersList = info["guildMembers"];
 
   let nonContained = [];
