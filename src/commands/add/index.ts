@@ -1,6 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Collection, Message, User } from "discord.js";
-import { GetMemberListFromGroup, TokenIsMention } from "..";
+import { GetInfoFromGroup, TokenIsMention } from "..";
 import { docClient } from "../..";
 import { Command } from "../../command";
 import {
@@ -28,7 +28,7 @@ const attemptUpdate = async (
     },
   };
 
-  const currentMembers = await GetMemberListFromGroup(params);
+  const currentMembers = await GetInfoFromGroup(params)["guildMembers"];
 
   let contained = [];
   users.forEach((user, idx) => {

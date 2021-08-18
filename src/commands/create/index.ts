@@ -45,6 +45,8 @@ const createPrivateChannels = async (msg: Message, groupToUpload: Group) => {
     memberNew.roles.add(roleCreated);
   });
 
+  groupToUpload.role = roleCreated;
+
   msg.guild.channels
     .create(`${groupToUpload.name}`, {
       reason: "Automatically created by Anarchy Buddy during group creation.",
@@ -425,6 +427,7 @@ const makeGroup = async (msg: Message, groupName?: string) => {
     privateGroup: false,
     name: groupName ? groupName : "",
     server: msg.guild.id,
+    role: undefined,
   };
 
   await takeInput(

@@ -1,6 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Collection, Message, User } from "discord.js";
-import { GetMemberListFromGroup, TokenIsMention } from "..";
+import { GetInfoFromGroup, TokenIsMention } from "..";
 import { docClient } from "../..";
 import { Command } from "../../command";
 import {
@@ -28,10 +28,12 @@ const attemptRemove = async (
     },
   };
 
-  const membersList = await GetMemberListFromGroup(params);
+  console.log("TRYING TO GET INFO ");
+  const info = await GetInfoFromGroup(params);
+  console.log("INFO: ", info);
+  const membersList = info["guildMembers"];
 
   let nonContained = [];
-  let containedIndices = [];
   users = users.filter((user) => {
     let contained = false;
     membersList.forEach((member) => {
@@ -52,46 +54,6 @@ const attemptRemove = async (
     if (!contained) nonContained.push(user);
     return contained;
   });
-
-  console.log(
-    "UPDATE STATEMENT WOULD BE: ",
-    `REMOVE ${containedIndices.map((idx) => `info.members[${idx}]`).join(",")}`
-  );
-  // const paramsRemove: DocumentClient.UpdateItemInput = {
-  //   TableName: BOT_TEAM_DATABASE_NAME,
-  //   Key: {
-  //     id: `${groupName}-${msg.guild.id}`,
-  //   },
-  //   UpdateExpression: `REMOVE ${users
-  //     .map((_user, idx) => `info.members[${idx}]`)
-  //     .join(",")}`,
-  // };
-
-  // docClient.update(paramsRemove, (error) => {
-  //   if (!error) {
-  //     return msg.channel.send(
-  //       `Added ${users
-  //         .map((user) => user.username)
-  //         .join(", ")} to the group ${groupName}`
-  //     );
-  //   } else {
-  //     return console.error(`${ERRORS.DB_UPDATE_ERROR}: ${error}`);
-  //   }
-  // });
-
-  // if (nonContained.length > 0) {
-  //   LogUserError(msg, "USER_ALREADY_ADDED");
-  //   msg.channel.send(
-  //     `${ERRORS.USER_NOT_IN_GROUP} ${nonContained
-  //       .map((user) => user.username)
-  //       .join(", ")}.`
-  //   );
-  // }
-
-  // if (users.array().length == 0) {
-  //   msg.channel.send("No remaining users to remove.");
-  //   return;
-  // }
 
   // ! Do not change the order in which these are listed, as this is important for handling the deletion of the right member.
 
@@ -132,6 +94,13 @@ const attemptRemove = async (
     } else {
       return console.error(`${ERRORS.DB_UPDATE_ERROR}: ${error}`);
     }
+  });
+
+  // Must now remove from role if it exists on the user
+
+  users.forEach((user) => {
+    let member = msg.guild.member(user);
+    member.roles.remove(info["role"]);
   });
 };
 

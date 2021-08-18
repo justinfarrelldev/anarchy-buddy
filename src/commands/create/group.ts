@@ -1,4 +1,4 @@
-import { User } from "discord.js";
+import { User, Role } from "discord.js";
 
 export interface Group {
   name: string;
@@ -8,4 +8,5 @@ export interface Group {
   color?: string;
   server: string;
   privateGroup: boolean;
+  role: Role | undefined;
 }

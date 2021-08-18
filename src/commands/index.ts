@@ -83,9 +83,7 @@ export const CleanUpAfterCommand = (msg: Message, predicate: string) => {
 export const GenerateChannelNameForGroup = (groupName: string): string =>
   `${groupName.replace(/ /g, "-")}`;
 
-export const GetMemberListFromGroup = async (
-  params: DocumentClient.ScanInput
-) => {
+export const GetInfoFromGroup = async (params: DocumentClient.ScanInput) => {
   return await docClient
     .scan(params, (error) => {
       if (error) {
@@ -95,7 +93,7 @@ export const GetMemberListFromGroup = async (
     .promise()
     .then((result) => {
       return result.Items.map((item) => {
-        return item["info"]["guildMembers"];
+        return item["info"];
       })[0];
     })
     .catch((err) =>
